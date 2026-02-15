@@ -1,0 +1,55 @@
+@import "@compasser/tailwind-config/theme.css";
+@source "./src";
+
+:root {
+  --color-primary: #0D98BA;
+  --color-primary-variant: #0DAABA;
+  --color-primary-button: #0C7B96;
+
+  --color-secondary: #FF9A62;
+  --color-secondary-variant: #FFC099;
+
+  --color-accent: #E64A4A;
+
+  --color-text: #1A1A1A;
+  --color-text-on-primary: #FFFFFF;
+  --color-text-on-secondary: #FFFFFF;
+  --color-text-inverse: #FFFFFF;
+
+  --color-gray-100: #F5F5F5;
+  --color-gray-200: #E8E8E8;
+  --color-gray-300: #D4D4D4;
+  --color-gray-400: #BDBDBD;
+  --color-gray-500: #8F8F8F;
+  --color-gray-600: #757575;
+  --color-gray-700: #4A4A4A;
+  --color-gray-800: #333333;
+
+  --font-sans: 'Pretendard', system-ui, sans-serif;
+}
+
+.page {
+  padding-left: 1.6rem;
+  padding-right: 1.6rem;
+}
+
+.app-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0 auto;
+  position: relative;
+  background: var(--color-text-inverse);
+  overflow-x: hidden;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .app-wrapper {
+    max-width: none;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .app-wrapper {
+    max-width: 390px;
+  }
+}

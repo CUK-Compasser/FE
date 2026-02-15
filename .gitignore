@@ -1,0 +1,52 @@
+# Node / pnpm
+node_modules/
+.pnpm-store/
+.pnpm-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build output
+dist/
+build/
+out/
+coverage/
+
+# turborepo
+.turbo/
+
+# Vite
+.vite/
+*.local
+
+# TypeScript
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Storybook
+storybook-static/
+
+# Design system build 
+packages/**/dist/
+
+# Misc
+.tmp/
+.cache/

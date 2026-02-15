@@ -1,0 +1,117 @@
+/* font */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+@import "tailwindcss";
+
+/* color */
+@utility bg-primary { background-color: var(--color-primary); }
+@utility bg-primary-button { background-color: var(--color-primary-button); }
+@utility bg-secondary { background-color: var(--color-secondary); }
+@utility bg-accent { background-color: var(--color-accent); }
+
+@utility text-default { color: var(--color-text); }
+@utility text-on-primary { color: var(--color-text-on-primary); }
+@utility text-on-secondary { color: var(--color-text-on-secondary); }
+@utility text-inverse { color: var(--color-text-inverse); }
+
+@utility bg-gray-100 { background-color: var(--color-gray-100); }
+@utility bg-gray-200 { background-color: var(--color-gray-200); }
+@utility bg-gray-300 { background-color: var(--color-gray-300); }
+@utility bg-gray-400 { background-color: var(--color-gray-400); }
+@utility bg-gray-500 { background-color: var(--color-gray-500); }
+@utility bg-gray-600 { background-color: var(--color-gray-600); }
+@utility bg-gray-700 { background-color: var(--color-gray-700); }
+@utility bg-gray-800 { background-color: var(--color-gray-800); }
+
+@utility text-gray-500 { color: var(--color-gray-500); }
+@utility text-gray-700 { color: var(--color-gray-700); }
+
+/* typography - head */
+@utility head1 { font-weight:700; font-size:4rem; line-height:140%; letter-spacing:-0.02em; }
+@utility head2 { font-weight:700; font-size:3.2rem; line-height:140%; letter-spacing:-0.02em; }
+@utility head3 { font-weight:700; font-size:2.6rem; line-height:140%; letter-spacing:-0.02em; }
+
+/* typography - subtitle */
+@utility sub1-sb { font-weight:600; font-size:2rem; line-height:140%; letter-spacing:-0.02em; }
+@utility sub2-sb { font-weight:600; font-size:1.8rem; line-height:140%; letter-spacing:-0.02em; }
+
+/* typography - body */
+@utility body1-sb { font-weight:600; font-size:1.6rem; line-height:150%; letter-spacing:-0.025em; }
+@utility body1-m  { font-weight:500; font-size:1.8rem; line-height:150%; letter-spacing:-0.025em; }
+@utility body1-r  { font-weight:400; font-size:1.8rem; line-height:150%; letter-spacing:-0.025em; }
+@utility body2-m  { font-weight:500; font-size:1.6rem; line-height:150%; letter-spacing:-0.025em; }
+@utility body2-r  { font-weight:400; font-size:1.6rem; line-height:150%; letter-spacing:-0.025em; }
+
+/* typography - caption */
+@utility caption1-sb { font-weight:600; font-size:1.4rem; line-height:150%; letter-spacing:-0.025em; }
+@utility caption2-m  { font-weight:500; font-size:1.2rem; line-height:150%; letter-spacing:-0.025em; }
+
+/* shadow */
+@utility common-shadow {
+  box-shadow: 0 0 32px rgba(0,0,0,0.1);
+}
+
+/* Layout
+@utility layout-flex { display: var(--display-flex); }
+@utility layout-grid { display: var(--display-grid); }
+@utility layout-block { display: var(--display-block); }
+@utility layout-inline { display: var(--display-inline); }
+
+@utility grid-cols-6 { grid-template-columns: var(--grid-cols-6); }
+@utility grid-cols-4 { grid-template-columns: var(--grid-cols-4); }
+
+@utility max-w-mobile { max-width: var(--max-w-mobile); }
+@utility min-w-100 { min-width: var(--min-w-100); } */
+
+/* scrollbar */
+@layer utilities {
+  :where(.ds-scrollbar) {
+    --ds-scroll-size: 0.4rem;
+    --ds-scroll-thumb: var(--color-gray-200);
+    --ds-scroll-track: transparent;
+    scrollbar-color: var(--ds-scroll-thumb) var(--ds-scroll-track);
+  }
+
+  :where(.ds-scrollbar)::-webkit-scrollbar {
+    width: var(--ds-scroll-size);
+    height: var(--ds-scroll-size);
+  }
+
+  :where(.ds-scrollbar)::-webkit-scrollbar-thumb {
+    background: var(--ds-scroll-thumb);
+    border-radius: 9999px;
+  }
+}
+
+/* tailwind theme bridge */
+@theme {
+  --color-*: initial;
+
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-accent: var(--color-accent);
+
+  --color-gray-100: var(--color-gray-100);
+  --color-gray-200: var(--color-gray-200);
+  --color-gray-300: var(--color-gray-300);
+  --color-gray-400: var(--color-gray-400);
+  --color-gray-500: var(--color-gray-500);
+  --color-gray-600: var(--color-gray-600);
+  --color-gray-700: var(--color-gray-700);
+  --color-gray-800: var(--color-gray-800);
+
+  /* Display
+  --display-flex: flex;
+  --display-grid: grid;
+  --display-block: block;
+  --display-inline: inline-block; */
+
+  /* Grid
+  --grid-cols-6: repeat(6, minmax(0, 1fr));
+  --grid-cols-4: repeat(4, minmax(0, 1fr));
+  --grid-rows-auto: auto; */
+
+  /* Width
+  --max-w-mobile: 430px;
+  --min-w-100: 100px;
+  --min-w-200: 200px; */
+}
