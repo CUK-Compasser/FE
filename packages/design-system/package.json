@@ -7,7 +7,7 @@
     ".": "./src/index.ts",
     "./components": "./src/components/index.ts",
     "./icons": "./src/icons/index.ts",
-    "./utils": "./src/utils/index.ts",
+    "./utils": "./src/libs/index.ts",
     "./styles.css": "./styles.css"
   },
   "scripts": {
