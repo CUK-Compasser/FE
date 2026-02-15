@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "@compasser/design-system/styles.css"
-import { cn } from "@compasser/design-system/utils";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
