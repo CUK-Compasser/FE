@@ -1,4 +1,4 @@
-import "@/styles/globals.css";
+import "@/shared/styles/globals.css";
 import type { ReactNode } from "react";
 import Providers from "@/shared/lib/Providers";
 
