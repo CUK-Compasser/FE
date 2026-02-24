@@ -2,32 +2,30 @@ name: ci
 
 on:
   push:
-    branches:
-      - main
-      - develop
+    branches: [main, develop]
   pull_request:
-    branches:
-      - main
-      - develop
+    branches: [main, develop]
 
 jobs:
   verify:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "pnpm"
-
+      # 🔹 pnpm 먼저 설치
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10
+          run_install: false
+
+      # 🔹 Node 설정 + pnpm 캐시
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -38,5 +36,5 @@ jobs:
       - name: Type check
         run: pnpm turbo run type-check
 
-      - name: Build (all apps)
+      - name: Build
         run: pnpm turbo run build
