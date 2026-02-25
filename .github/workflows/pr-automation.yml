@@ -1,0 +1,76 @@
+name: Auto Label, Link Issue & Validate Branch
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+permissions:
+  pull-requests: write
+  issues: write
+  contents: write
+
+jobs:
+  auto-process:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate branch, label, and link issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const labelMapping = {
+              feat: 'feat',
+              fix: 'fix',
+              refactor: 'refactor',
+              style: 'style',
+              docs: 'docs',
+              setting: 'setting',
+              chore: 'chore',
+              api: 'api',
+              initial: 'initial',
+              question: 'question'
+            };
+
+            const branchName = context.payload.pull_request.head.ref;
+            const parts = branchName.split('/');
+
+            if (parts.length < 3) {
+              core.setFailed("❌ 브랜치 형식은 type/#이슈번호/설명 형태여야 합니다.");
+              return;
+            }
+
+            const prefix = parts[0].toLowerCase();
+            const issuePart = parts[1];
+
+            if (!labelMapping[prefix]) {
+              core.setFailed(`❌ 잘못된 prefix '${prefix}' 입니다. 허용 값: ${Object.keys(labelMapping).join(', ')}`);
+              return;
+            }
+
+            if (!/^#\d+$/.test(issuePart)) {
+              core.setFailed("❌ 두 번째 경로는 '#이슈번호' 형식이어야 합니다. 예: #12");
+              return;
+            }
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: [labelMapping[prefix]]
+            });
+
+            const issueNumber = issuePart.replace('#', '');
+            const pr = context.payload.pull_request;
+            const currentBody = pr.body || "";
+
+            if (!currentBody.includes(`Fixes #${issueNumber}`)) {
+              const newBody = currentBody + `\n\nFixes #${issueNumber}`;
+
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                body: newBody
+              });
+
+              console.log(`Linked PR to issue #${issueNumber}`);
+            }
