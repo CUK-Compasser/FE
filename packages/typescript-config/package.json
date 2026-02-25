@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "exports": {
-    "./base": "./base.json",
-    "./react": "./react.json",
-    "./next": "./next.json"
+    "./base.json": "./base.json",
+    "./react.json": "./react.json",
+    "./next.json": "./next.json"
   }
 }

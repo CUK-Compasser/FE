@@ -1,5 +1,5 @@
 {
-  "extends": "@compasser/typescript-config/next",
+  "extends": "@compasser/typescript-config/next.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
