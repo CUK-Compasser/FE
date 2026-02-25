@@ -31,8 +31,6 @@ jobs:
             };
 
             const branchName = context.payload.pull_request.head.ref;
-            console.log(`Branch name: ${branchName}`);
-
             const parts = branchName.split('/');
 
             if (parts.length < 3) {
