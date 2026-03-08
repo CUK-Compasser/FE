@@ -9,8 +9,6 @@
 @utility bg-accent { background-color: var(--color-accent); }
 
 @utility text-default { color: var(--color-text); }
-@utility text-on-primary { color: var(--color-text-on-primary); }
-@utility text-on-secondary { color: var(--color-text-on-secondary); }
 @utility text-inverse { color: var(--color-text-inverse); }
 
 @utility bg-gray-100 { background-color: var(--color-gray-100); }
@@ -22,32 +20,35 @@
 @utility bg-gray-700 { background-color: var(--color-gray-700); }
 @utility bg-gray-800 { background-color: var(--color-gray-800); }
 
+@utility text-gray-100 { color: var(--color-gray-100); }
+@utility text-gray-200 { color: var(--color-gray-200); }
+@utility text-gray-300 { color: var(--color-gray-300); }
+@utility text-gray-400 { color: var(--color-gray-400); }
 @utility text-gray-500 { color: var(--color-gray-500); }
+@utility text-gray-600 { color: var(--color-gray-600); }
 @utility text-gray-700 { color: var(--color-gray-700); }
+@utility text-gray-800 { color: var(--color-gray-800); }
 
 /* typography - head */
-@utility head1 { font-weight:700; font-size:4rem; line-height:140%; letter-spacing:-0.02em; }
-@utility head2 { font-weight:700; font-size:3.2rem; line-height:140%; letter-spacing:-0.02em; }
-@utility head3 { font-weight:700; font-size:2.6rem; line-height:140%; letter-spacing:-0.02em; }
-
-/* typography - subtitle */
-@utility sub1-sb { font-weight:600; font-size:2rem; line-height:140%; letter-spacing:-0.02em; }
-@utility sub2-sb { font-weight:600; font-size:1.8rem; line-height:140%; letter-spacing:-0.02em; }
+@utility head1-sb { font-weight:600; font-size:2.2rem; line-height:150%; letter-spacing:-0.02em; }
+@utility head2-sb { font-weight:600; font-size:2.0rem; line-height:150%; letter-spacing:-0.02em; }
+@utility head2-m { font-weight:500; font-size:2.0rem; line-height:150%; letter-spacing:-0.02em; }
+@utility head3-m { font-weight:500; font-size:1.8rem; line-height:150%; letter-spacing:-0.02em; }
 
 /* typography - body */
-@utility body1-sb { font-weight:600; font-size:1.6rem; line-height:150%; letter-spacing:-0.025em; }
-@utility body1-m  { font-weight:500; font-size:1.8rem; line-height:150%; letter-spacing:-0.025em; }
-@utility body1-r  { font-weight:400; font-size:1.8rem; line-height:150%; letter-spacing:-0.025em; }
-@utility body2-m  { font-weight:500; font-size:1.6rem; line-height:150%; letter-spacing:-0.025em; }
-@utility body2-r  { font-weight:400; font-size:1.6rem; line-height:150%; letter-spacing:-0.025em; }
+@utility body1-sb { font-weight:600; font-size:2.0rem; line-height:150%; letter-spacing:-0.025em; }
+@utility body1-m  { font-weight:500; font-size:1.6rem; line-height:150%; letter-spacing:-0.025em; }
+@utility body1-r  { font-weight:400; font-size:1.6rem; line-height:150%; letter-spacing:-0.025em; }
+@utility body2-m  { font-weight:500; font-size:1.4rem; line-height:150%; letter-spacing:-0.025em; }
+@utility body2-r  { font-weight:400; font-size:1.4rem; line-height:150%; letter-spacing:-0.025em; }
 
 /* typography - caption */
-@utility caption1-sb { font-weight:600; font-size:1.4rem; line-height:150%; letter-spacing:-0.025em; }
-@utility caption2-m  { font-weight:500; font-size:1.2rem; line-height:150%; letter-spacing:-0.025em; }
+@utility caption1-r { font-weight:400; font-size:1.2rem; line-height:150%; letter-spacing:-0.025em; }
+@utility caption2-r  { font-weight:400; font-size:1.0rem; line-height:150%; letter-spacing:-0.025em; }
 
 /* shadow */
 @utility common-shadow {
-  box-shadow: 0 0 32px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Layout
@@ -90,6 +91,9 @@
   --color-secondary: var(--color-secondary);
   --color-accent: var(--color-accent);
 
+  --color-white: var(--color-white);
+  --color-black: var(--color-black);
+  
   --color-gray-100: var(--color-gray-100);
   --color-gray-200: var(--color-gray-200);
   --color-gray-300: var(--color-gray-300);

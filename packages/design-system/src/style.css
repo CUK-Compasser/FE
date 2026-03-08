@@ -1,6 +1,10 @@
 @import "@compasser/tailwind-config/theme.css";
 @source "./src";
 
+html {
+  font-size: 62.5%;
+}
+
 :root {
   --color-primary: #0D98BA;
   --color-primary-variant: #0DAABA;
@@ -12,8 +16,6 @@
   --color-accent: #E64A4A;
 
   --color-text: #1A1A1A;
-  --color-text-on-primary: #FFFFFF;
-  --color-text-on-secondary: #FFFFFF;
   --color-text-inverse: #FFFFFF;
 
   --color-gray-100: #F5F5F5;
