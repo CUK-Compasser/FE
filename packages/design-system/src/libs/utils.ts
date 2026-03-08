@@ -4,20 +4,18 @@ import { extendTailwindMerge } from "tailwind-merge";
 const twMerge = extendTailwindMerge({
   extend: {
     theme: {
-      /* Typography*/
       text: [
-        "head1",
-        "head2",
-        "head3",
-        "sub1-sb",
-        "sub2-sb",
+        "head1-sb",
+        "head2-sb",
+        "head2-m",
+        "head3-m",
         "body1-sb",
         "body1-m",
         "body1-r",
         "body2-m",
         "body2-r",
-        "caption1-sb",
-        "caption2-m",
+        "caption1-r",
+        "caption2-r",
       ],
 
       color: [
@@ -41,9 +39,14 @@ const twMerge = extendTailwindMerge({
         "text-on-primary",
         "text-on-secondary",
         "text-inverse",
-
+        "text-gray-100",
+        "text-gray-200",
+        "text-gray-300",
+        "text-gray-400",
         "text-gray-500",
+        "text-gray-600",
         "text-gray-700",
+        "text-gray-800",
       ],
 
 
