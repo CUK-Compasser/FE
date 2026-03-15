@@ -1,4 +1,4 @@
-import { spriteSymbols } from '../generated/spriteSymbols';
+import { spriteSymbols } from "../generated/spriteSymbols";
 
 export const IconSprite = () => {
   return (
@@ -7,7 +7,7 @@ export const IconSprite = () => {
       focusable="false"
       width="0"
       height="0"
-      style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}
+      style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }}
       dangerouslySetInnerHTML={{
         __html: spriteSymbols,
       }}

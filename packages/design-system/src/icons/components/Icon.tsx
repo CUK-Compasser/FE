@@ -1,25 +1,25 @@
-import * as React from 'react';
-import clsx from 'clsx';
-import type { IconName } from '../generated/iconNames';
+import * as React from "react";
+import clsx from "clsx";
+import type { IconName } from "../generated/iconNames";
 
 type IconRotate = 90 | 180 | 270;
 
 type IconColor =
-  | 'primary'
-  | 'primary-variant'
-  | 'primary-button'
-  | 'secondary'
-  | 'accent'
-  | 'default'
-  | 'inverse'
-  | 'gray-100'
-  | 'gray-200'
-  | 'gray-300'
-  | 'gray-400'
-  | 'gray-500'
-  | 'gray-600'
-  | 'gray-700'
-  | 'gray-800';
+  | "primary"
+  | "primary-variant"
+  | "primary-button"
+  | "secondary"
+  | "accent"
+  | "default"
+  | "inverse"
+  | "gray-100"
+  | "gray-200"
+  | "gray-300"
+  | "gray-400"
+  | "gray-500"
+  | "gray-600"
+  | "gray-700"
+  | "gray-800";
 
 export interface IconProps extends React.SVGProps<SVGSVGElement> {
   name: IconName;
@@ -56,7 +56,7 @@ export const Icon = ({
   const h = height ?? size ?? 20;
 
   const handleKeyDown = (e: React.KeyboardEvent<SVGSVGElement>) => {
-    if (isInteractive && (e.key === 'Enter' || e.key === ' ')) {
+    if (isInteractive && (e.key === "Enter" || e.key === " ")) {
       e.preventDefault();
       onClick?.(e as unknown as React.MouseEvent<SVGSVGElement, MouseEvent>);
     }
@@ -65,18 +65,18 @@ export const Icon = ({
 
   const rotateClass =
     rotate === 90
-      ? 'rotate-90'
+      ? "rotate-90"
       : rotate === 180
-      ? 'rotate-180'
-      : rotate === 270
-      ? 'rotate-[270deg]'
-      : '';
+        ? "rotate-180"
+        : rotate === 270
+          ? "rotate-[270deg]"
+          : "";
 
   const combinedClassName = clsx(
-    'inline-block shrink-0',
-    'transform',
+    "inline-block shrink-0",
+    "transform",
     rotateClass,
-    hasRotateAnimation && 'transition-transform duration-200',
+    hasRotateAnimation && "transition-transform duration-200",
     className,
   );
 
@@ -87,11 +87,11 @@ export const Icon = ({
 
   return (
     <svg
-      width={typeof w === 'number' ? `${w}px` : w}
-      height={typeof h === 'number' ? `${h}px` : h}
+      width={typeof w === "number" ? `${w}px` : w}
+      height={typeof h === "number" ? `${h}px` : h}
       className={combinedClassName}
       style={iconStyle}
-      role={isInteractive ? 'button' : undefined}
+      role={isInteractive ? "button" : undefined}
       tabIndex={isInteractive ? 0 : undefined}
       aria-pressed={isInteractive ? pressed : undefined}
       aria-hidden={ariaHidden}
