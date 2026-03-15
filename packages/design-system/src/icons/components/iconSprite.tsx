@@ -1,6 +1,6 @@
 import { spriteSymbols } from "../generated/spriteSymbols";
 
-export const IconSprite = () => {
+export const iconSprite = () => {
   return (
     <svg
       aria-hidden="true"
