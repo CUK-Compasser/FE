@@ -20,19 +20,19 @@ const getVariantClass = ({
   }
 
   switch (variant) {
-    case "primary":
-      return pressed
-        ? "bg-primary-button text-inverse"
-        : "bg-primary text-inverse hover:bg-primary-button active:bg-primary-button";
+  case "primary":
+    return pressed
+      ? "bg-primary-button text-inverse"
+      : "bg-primary text-inverse hover:bg-primary-button active:bg-primary-button";
 
-    case "gray":
-      return "bg-gray-500 text-inverse";
+  case "gray":
+    return "bg-gray-500 text-inverse";
 
-    case "secondary":
-      return "bg-secondary text-inverse";
+  case "secondary":
+    return "bg-secondary text-inverse";
 
-    default:
-      return "bg-primary text-inverse hover:bg-primary-button active:bg-primary-button";
+  default:
+    return "bg-primary text-inverse hover:bg-primary-button active:bg-primary-button";
   }
 };
 
