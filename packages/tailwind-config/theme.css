@@ -29,6 +29,11 @@
 @utility text-gray-700 { color: var(--color-gray-700); }
 @utility text-gray-800 { color: var(--color-gray-800); }
 
+@utility border-primary { border-color: var(--color-primary); }
+@utility border-primary-variant { border-color: var(--color-primary-variant); }
+@utility border-accent { border-color: var(--color-accent); }
+@utility border-gray-500 { border-color: var(--color-gray-500); }
+
 /* typography - head */
 @utility head1-sb { font-weight:600; font-size:2.2rem; line-height:150%; letter-spacing:-0.02em; }
 @utility head2-sb { font-weight:600; font-size:2.0rem; line-height:150%; letter-spacing:-0.02em; }
@@ -88,12 +93,12 @@
   --color-*: initial;
 
   --color-primary: var(--color-primary);
+  --color-primary-variant: var(--color-primary-variant);
+  --color-primary-button: var(--color-primary-button);
   --color-secondary: var(--color-secondary);
   --color-accent: var(--color-accent);
-
-  --color-white: var(--color-white);
-  --color-black: var(--color-black);
-  
+  --color-default: var(--color-text);
+  --color-inverse: var(--color-text-inverse);
   --color-gray-100: var(--color-gray-100);
   --color-gray-200: var(--color-gray-200);
   --color-gray-300: var(--color-gray-300);
