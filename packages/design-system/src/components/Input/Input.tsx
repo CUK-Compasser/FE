@@ -22,20 +22,25 @@ export const Input = ({
   const currentType =
     isPasswordInput && isPasswordVisible ? "text" : type;
 
+  const containerClassName = isAddressInput
+    ? "rounded-[999px] bg-gray-200"
+    : cn(
+        "rounded-[8px] border",
+        error
+          ? "border-accent"
+          : "border-gray-500 focus-within:border-primary"
+      );
+
+  const inputFieldClassName = isAddressInput
+    ? "rounded-[999px] bg-gray-200 px-[1rem] py-[1rem]"
+    : "rounded-[8px] bg-transparent px-[1rem] py-[1.2rem]";
+
   return (
     <div className={cn("w-full", className)}>
       <div
         className={cn(
           "flex w-full items-center transition-colors",
-          isAddressInput
-            ? "rounded-[999px] bg-gray-200"
-            : [
-                "rounded-[8px]",
-                "border",
-                error
-                  ? "border-accent"
-                  : "border-gray-500 focus-within:border-primary",
-              ],
+          containerClassName,
           disabled && "cursor-not-allowed opacity-60"
         )}
       >
@@ -45,10 +50,8 @@ export const Input = ({
           aria-invalid={error}
           className={cn(
             "body1-r w-full outline-none",
-            "placeholder:body1-r placeholder:text-gray-500",
-            isAddressInput
-              ? "rounded-[999px] bg-gray-200 px-[1rem] py-[1rem]"
-              : "rounded-[8px] bg-transparent px-[1rem] py-[1.2rem]",
+            "placeholder:text-gray-500",
+            inputFieldClassName,
             isPasswordInput && showPasswordToggle && "pr-[0.8rem]",
             inputClassName
           )}
