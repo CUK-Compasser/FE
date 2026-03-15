@@ -27,29 +27,29 @@ const getVariantClass = ({
   }
 
   switch (variant) {
-    case "primary":
-      return pressed
-        ? "bg-primary-button text-inverse border-transparent"
-        : "bg-primary text-inverse hover:bg-primary-button active:bg-primary-button border-transparent";
+  case "primary":
+    return pressed
+      ? "bg-primary-button text-inverse border-transparent"
+      : "bg-primary text-inverse hover:bg-primary-button active:bg-primary-button border-transparent";
 
-    case "gray":
-      return "bg-gray-500 text-inverse border-transparent";
+  case "gray":
+    return "bg-gray-500 text-inverse border-transparent";
 
-    case "secondary":
-      return "bg-secondary text-inverse border-transparent";
+  case "secondary":
+    return "bg-secondary text-inverse border-transparent";
 
-    case "outline-primary":
-      return pressed
-        ? "bg-primary/10 text-primary border border-primary"
-        : "bg-transparent text-primary border border-primary hover:bg-primary/10 active:bg-primary/10";
+  case "outline-primary":
+    return pressed
+      ? "bg-primary/10 text-primary border border-primary"
+      : "bg-transparent text-primary border border-primary hover:bg-primary/10 active:bg-primary/10";
 
-    case "outline-gray":
-      return pressed
-        ? "bg-gray-100 text-gray-600 border border-gray-600"
-        : "bg-transparent text-gray-600 border border-gray-600 hover:bg-gray-100 active:bg-gray-100";
+  case "outline-gray":
+    return pressed
+      ? "bg-gray-100 text-gray-600 border border-gray-600"
+      : "bg-transparent text-gray-600 border border-gray-600 hover:bg-gray-100 active:bg-gray-100";
 
-    default:
-      return "bg-primary text-inverse hover:bg-primary-button active:bg-primary-button border-transparent";
+  default:
+    return "bg-primary text-inverse hover:bg-primary-button active:bg-primary-button border-transparent";
   }
 };
 
