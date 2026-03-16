@@ -1,4 +1,4 @@
-import "@/shared/styles/globals.css";
+import "@compasser/design-system/styles.css";
 import type { ReactNode } from "react";
 import Providers from "@/shared/lib/Providers";
 import { IconSprite } from "@compasser/design-system";

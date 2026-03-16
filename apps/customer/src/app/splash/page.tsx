@@ -17,7 +17,7 @@ export default function SplashPage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-white">
-      <Icon name="LogoText" ariaHidden={false} />
+      <Icon name="LogoText" width={332} height={158} ariaHidden={false} />
     </main>
   );
 }
