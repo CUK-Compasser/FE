@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { cn } from "../../libs";
 import type { InputProps } from "./Input.types";
