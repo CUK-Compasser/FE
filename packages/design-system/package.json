@@ -8,7 +8,7 @@
     "./components": "./src/components/index.ts",
     "./icons": "./src/icons/index.ts",
     "./utils": "./src/libs/index.ts",
-    "./styles.css": "./src/styles.css"
+    "./style.css": "./src/style.css"
   },
   "scripts": {
     "icons:clean": "svgo -r -f src/icons/source --config=./svgo.config.mjs --multipass",
