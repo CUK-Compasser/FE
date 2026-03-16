@@ -1,2 +1,3 @@
 @import "@compasser/design-system/style.css";
-@source "../**/*.{ts,tsx}";
+@source "../../app/**/*.{ts,tsx}";
+@source "../../shared/**/*.{ts,tsx}";
