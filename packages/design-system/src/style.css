@@ -1,6 +1,12 @@
 @import "@compasser/tailwind-config";
 @source "./src";
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
 html {
   font-size: 62.5%;
 }
@@ -28,11 +34,6 @@ html {
   --color-gray-800: #333333;
 
   --font-sans: 'Pretendard', system-ui, sans-serif;
-}
-
-.page {
-  padding-left: 1.6rem;
-  padding-right: 1.6rem;
 }
 
 .app-wrapper {
