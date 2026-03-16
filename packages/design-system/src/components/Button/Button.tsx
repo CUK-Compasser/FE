@@ -1,3 +1,5 @@
+"use client";
+
 import type { ButtonProps } from "./Button.types";
 import { cn } from "../../libs";
 

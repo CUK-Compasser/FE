@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "../../libs";
 import type { BottomSheetProps, BottomSheetVariant } from "./BottomSheet.types";
 
