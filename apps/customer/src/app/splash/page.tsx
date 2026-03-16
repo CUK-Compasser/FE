@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { Icon } from "@compasser/design-system";
 
 export default function SplashPage() {
   const router = useRouter();
@@ -17,13 +17,7 @@ export default function SplashPage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-white">
-      <Image
-        src="/images/logo.svg"
-        alt="Compasser logo"
-        width={120}
-        height={120}
-        priority
-      />
+      <Icon name="LogoText" ariaHidden={false} />
     </main>
   );
 }
