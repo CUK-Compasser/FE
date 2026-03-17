@@ -5,21 +5,21 @@
 /* color */
 @utility bg-primary { background-color: var(--color-primary); }
 @utility bg-primary-button { background-color: var(--color-primary-button); }
+@utility bg-background { background-color: var(--color-background); }
 @utility bg-secondary { background-color: var(--color-secondary); }
 @utility bg-accent { background-color: var(--color-accent); }
-
-@utility text-default { color: var(--color-text); }
-@utility text-inverse { color: var(--color-text-inverse); }
-
+@utility bg-inverse { background-color: var(--color-text-inverse); }
 @utility bg-gray-100 { background-color: var(--color-gray-100); }
 @utility bg-gray-200 { background-color: var(--color-gray-200); }
 @utility bg-gray-300 { background-color: var(--color-gray-300); }
-@utility bg-gray-400 { background-color: var(--color-gray-400); }
+@utility bg-gray-400 { background-color: var(--color-graSy-400); }
 @utility bg-gray-500 { background-color: var(--color-gray-500); }
 @utility bg-gray-600 { background-color: var(--color-gray-600); }
 @utility bg-gray-700 { background-color: var(--color-gray-700); }
 @utility bg-gray-800 { background-color: var(--color-gray-800); }
 
+@utility text-default { color: var(--color-text); }
+@utility text-inverse { color: var(--color-text-inverse); }
 @utility text-gray-100 { color: var(--color-gray-100); }
 @utility text-gray-200 { color: var(--color-gray-200); }
 @utility text-gray-300 { color: var(--color-gray-300); }
@@ -33,6 +33,8 @@
 @utility border-primary-variant { border-color: var(--color-primary-variant); }
 @utility border-accent { border-color: var(--color-accent); }
 @utility border-gray-500 { border-color: var(--color-gray-500); }
+@utility border-gray-200 { border-color: var(--color-gray-200); }
+@utility border-gray-300 { border-color: var(--color-gray-300); }
 
 /* typography - head */
 @utility head1-sb { font-weight:600; font-size:2.2rem; line-height:150%; letter-spacing:-0.02em; }

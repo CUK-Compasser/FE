@@ -9,7 +9,7 @@ export default function SplashPage() {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      router.replace("/login");
+      router.replace("/role-select");
     }, 2000);
 
     return () => clearTimeout(timeout);
