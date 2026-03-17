@@ -70,7 +70,7 @@ const variantClasses = {
    * x 0 / y 0 / blur 10 / #000000 20%
    */
   "inverse-elevated":
-    "bg-inverse p-[1rem] shadow-[0_0_10px_0_rgba(0,0,0,0.2)]",
+    "bg-inverse p-[1rem] rounded-[10px] shadow-[0_0_10px_0_rgba(0,0,0,0.2)]",
 
   /**
    * 10) 위아래 border만 gray-200 / px 1.6rem / py 1rem
