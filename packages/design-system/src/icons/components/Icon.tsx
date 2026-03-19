@@ -91,6 +91,7 @@ export const Icon = ({
       height={typeof h === "number" ? `${h}px` : h}
       className={combinedClassName}
       style={iconStyle}
+      fill="none"
       role={isInteractive ? "button" : undefined}
       tabIndex={isInteractive ? 0 : undefined}
       aria-pressed={isInteractive ? pressed : undefined}
@@ -99,7 +100,7 @@ export const Icon = ({
       onKeyDown={isInteractive ? handleKeyDown : undefined}
       {...rest}
     >
-      <use href={`#icon-${name}`} />
+      <use href={`#icon-${name}`} xlinkHref={`#icon-${name}`} />
     </svg>
   );
 };
