@@ -12,12 +12,12 @@ const meta: Meta<HeaderProps> = {
   tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <>
+      <div>
         <IconSprite />
         <div className="w-full bg-inverse">
           <Story />
         </div>
-      </>
+      </div>
     ),
   ],
 };
