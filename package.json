@@ -16,7 +16,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-plugin-react": "^7",
-    "eslint-plugin-react-hooks": "^4",
+    "eslint-plugin-react-hooks": "^7.0.1",
     "postcss": "^8.5.8",
     "tailwindcss": "^4.1.18",
     "turbo": "^2.0.0",
