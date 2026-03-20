@@ -51,7 +51,7 @@ export default [
   },
 
   {
-    files: ["src/icons/scripts/**/*.{ts,js}"],
+    files: ["**/src/icons/scripts/**/*.{ts,js}"],
     rules: {
       "no-console": "off",
     },
