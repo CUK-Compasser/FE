@@ -3,7 +3,10 @@ export const iconNames = [
   "Alarm",
   "BackButton",
   "CloseButton",
+  "Home",
   "LogoText",
-  "MapPin"
+  "MapPin",
+  "My",
+  "Order"
 ] as const;
 export type IconName = typeof iconNames[number];
