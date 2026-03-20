@@ -4,3 +4,5 @@ export * from "./Modal";
 export * from "./BottomSheet";
 export * from "./Card";
 export * from "./Tag";
+export * from "./Header";
+export * from "./BottomTabBar";
