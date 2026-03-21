@@ -13,7 +13,7 @@ const variantClasses = {
    * shadow: x 2 / y 4 / blur 4 / color #0D98BA 20%
    */
   "role-select":
-    "border border-primary rounded-[10px] bg-background px-0 py-[2.7rem] shadow-[2px_4px_4px_0_rgba(13,152,186,0.2)]",
+    "border border-primary bg-background rounded-[10px] px-0 shadow-[2px_4px_4px_0_rgba(13,152,186,0.2)]",
 
   /**
    * 2) 기본 카드
