@@ -12,7 +12,7 @@
 @utility bg-gray-100 { background-color: var(--color-gray-100); }
 @utility bg-gray-200 { background-color: var(--color-gray-200); }
 @utility bg-gray-300 { background-color: var(--color-gray-300); }
-@utility bg-gray-400 { background-color: var(--color-graSy-400); }
+@utility bg-gray-400 { background-color: var(--color-gray-400); }
 @utility bg-gray-500 { background-color: var(--color-gray-500); }
 @utility bg-gray-600 { background-color: var(--color-gray-600); }
 @utility bg-gray-700 { background-color: var(--color-gray-700); }
@@ -101,6 +101,7 @@
   --color-accent: var(--color-accent);
   --color-default: var(--color-text);
   --color-inverse: var(--color-text-inverse);
+  --color-back-ground: var(--color-background);
   --color-gray-100: var(--color-gray-100);
   --color-gray-200: var(--color-gray-200);
   --color-gray-300: var(--color-gray-300);
