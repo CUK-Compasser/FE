@@ -6,7 +6,7 @@ import { IconSprite } from "@compasser/design-system";
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko">
-      <body className="w-full flex justify-center bg-gray-500">
+      <body className="w-full flex justify-center">
         <IconSprite />
         <Providers>
           <div className="app-wrapper">
