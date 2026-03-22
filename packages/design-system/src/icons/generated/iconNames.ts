@@ -5,6 +5,7 @@ export const iconNames = [
   "CloseButton",
   "CustomerSelect",
   "Home",
+  "KakaoLogo",
   "LogoText",
   "MapPin",
   "My",
