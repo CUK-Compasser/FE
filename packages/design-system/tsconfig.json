@@ -1,0 +1,7 @@
+{
+  "extends": "@compasser/typescript-config/react.json",
+  "compilerOptions": {
+    "outDir": "dist"
+  },
+  "include": ["src"]
+}

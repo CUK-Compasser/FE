@@ -1,0 +1,21 @@
+{
+  "name": "customer",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@compasser/design-system": "workspace:*",
+    "@tanstack/react-query": "^5.90.21",
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "@compasser/typescript-config": "workspace:*",
+    "eslint-config-next": "16.1.6"
+  }
+}
