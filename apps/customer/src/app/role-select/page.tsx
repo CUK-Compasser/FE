@@ -6,13 +6,25 @@ import { Card, Icon } from "@compasser/design-system";
 export default function RoleSelectPage() {
   const router = useRouter();
 
+  const handleMoveCustomerSignup = () => {
+    router.push("/signup");
+  };
+
+  const handleMoveOwnerSignup = () => {
+    const ownerBaseUrl = process.env.NEXT_PUBLIC_OWNER_BASE_URL;
+
+    if (!ownerBaseUrl) return;
+
+    window.location.href = `${ownerBaseUrl}/signup`;
+  };
+
   return (
     <main className="flex h-screen flex-col px-[1.6rem]">
       <section className="flex flex-1 items-center justify-center">
         <div className="flex w-full gap-[1.2rem]">
           <button
             type="button"
-            onClick={() => router.push("/signup")}
+            onClick={handleMoveCustomerSignup}
             className="min-w-0 flex-1 text-left"
             aria-label="고객으로 시작하기"
           >
@@ -32,7 +44,7 @@ export default function RoleSelectPage() {
 
           <button
             type="button"
-            onClick={() => router.push("/signup")}
+            onClick={handleMoveOwnerSignup}
             className="min-w-0 flex-1 text-left"
             aria-label="사장으로 시작하기"
           >
