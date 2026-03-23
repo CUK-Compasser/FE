@@ -12,7 +12,7 @@ const kindClasses = {
   default: "",
   simple: "body1-r py-[0.6rem] px-[2rem] rounded-[999px]",
   register: "body1-r py-[0.2rem] px-[0.8rem] rounded-[8px]",
-  move: "body1-r py-[0.4rem] px-[1rem] rounded-[999px]",
+  move: "body1-r py-[0.4rem] px-[1rem] rounded-[10px]",
 };
 
 const getVariantClass = ({
