@@ -1,18 +1,14 @@
-"use client";
+import MainPageClient from "./_components/MainPageClient";
 
-import { useSearchParams } from "next/navigation";
-import MainListView from "./_components/MainListView";
-import MainMapView from "./_components/MainMapView";
-import MainViewToggle from "./_components/MainViewToggle";
+interface MainPageProps {
+  searchParams?: Promise<{
+    view?: string;
+  }>;
+}
 
-export default function MainPage() {
-  const searchParams = useSearchParams();
-  const view = searchParams.get("view") === "map" ? "map" : "list";
+export default async function MainPage({ searchParams }: MainPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const view = resolvedSearchParams?.view === "map" ? "map" : "list";
 
-  return (
-    <main className="relative min-h-screen bg-white">
-      {view === "list" ? <MainListView /> : <MainMapView />}
-      <MainViewToggle view={view} />
-    </main>
-  );
+  return <MainPageClient view={view} />;
 }
