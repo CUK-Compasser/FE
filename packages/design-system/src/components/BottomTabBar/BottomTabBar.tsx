@@ -17,7 +17,7 @@ export const BottomTabBar = ({
   return (
     <nav
       className={clsx(
-        "fixed bottom-0 left-1/2 z-50 flex w-full -translate-x-1/2 bg-white",
+        "fixed bottom-0 left-1/2 z-50 flex w-full -translate-x-1/2 bg-inverse pb-[env(safe-area-inset-bottom)]",
         shadowClass,
         className
       )}

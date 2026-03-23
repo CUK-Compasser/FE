@@ -90,6 +90,17 @@
   }
 }
 
+@layer utilities {
+  :where(.ds-scrollbar-hidden) {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  :where(.ds-scrollbar-hidden)::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* tailwind theme bridge */
 @theme {
   --color-*: initial;
