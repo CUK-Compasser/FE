@@ -13,7 +13,7 @@ export default function OrderPage() {
     activeTab === "in-progress" ? IN_PROGRESS_ORDERS : DONE_ORDERS;
 
   return (
-    <main className="flex h-screen flex-col bg-white">
+    <main className="flex flex-col bg-white">
       <Header variant="center-title-shadow" title="주문 현황" />
 
       <TopTabBar
