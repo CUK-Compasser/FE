@@ -18,14 +18,13 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const activeKey =
-    pathname === "/main"
-      ? "home"
-      : pathname === "/order"
-        ? "order"
-        : pathname === "/mypage"
-          ? "my"
-          : "home";
+  const activeKey = pathname.startsWith("/mypage")
+    ? "my"
+    : pathname.startsWith("/order")
+      ? "order"
+      : pathname.startsWith("/main")
+        ? "home"
+        : "home";
 
   const handleTabChange = (key: string) => {
     if (key === "home") {
@@ -44,8 +43,8 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
   };
 
   return (
-    <div className="mx-auto flex h-dvh w-full max-w-[42.5rem] flex-col overflow-hidden bg-white">
-      <div className="flex-1 overflow-y-auto pb-[8.4rem]">
+    <div className="flex h-dvh w-full max-w-[42.5rem] flex-col overflow-hidden bg-white">
+      <div className="ds-scrollbar-hidden flex-1 overflow-y-auto pb-[8.4rem]">
         {children}
       </div>
 

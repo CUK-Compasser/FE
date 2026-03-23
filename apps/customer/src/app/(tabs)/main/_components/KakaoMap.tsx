@@ -11,7 +11,14 @@ declare global {
 
 export default function KakaoMap() {
   const mapRef = useRef<HTMLDivElement | null>(null);
+  const mapInstanceRef = useRef<any>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    if (window.kakao?.maps) {
+      setIsLoaded(true);
+    }
+  }, []);
 
   useEffect(() => {
     if (!isLoaded || !mapRef.current || !window.kakao?.maps) return;
@@ -19,12 +26,16 @@ export default function KakaoMap() {
     window.kakao.maps.load(() => {
       if (!mapRef.current) return;
 
-      const options = {
-        center: new window.kakao.maps.LatLng(37.503206, 126.766872),
-        level: 4,
-      };
+      if (!mapInstanceRef.current) {
+        const options = {
+          center: new window.kakao.maps.LatLng(37.503206, 126.766872),
+          level: 4,
+        };
 
-      new window.kakao.maps.Map(mapRef.current, options);
+        mapInstanceRef.current = new window.kakao.maps.Map(mapRef.current, options);
+      } else {
+        mapInstanceRef.current.relayout();
+      }
     });
   }, [isLoaded]);
 
@@ -33,7 +44,7 @@ export default function KakaoMap() {
       <Script
         src={`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_JAVASCRIPT_KEY}&autoload=false`}
         strategy="afterInteractive"
-        onLoad={() => setIsLoaded(true)}
+        onReady={() => setIsLoaded(true)}
       />
       <div ref={mapRef} className="h-full w-full" />
     </>

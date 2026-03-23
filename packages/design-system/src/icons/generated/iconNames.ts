@@ -11,7 +11,9 @@ export const iconNames = [
   "MapIcon",
   "MapPin",
   "My",
+  "NextButton",
   "Order",
-  "OwnerSelect"
+  "OwnerSelect",
+  "ProfileCharacter"
 ] as const;
 export type IconName = typeof iconNames[number];

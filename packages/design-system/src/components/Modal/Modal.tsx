@@ -45,7 +45,7 @@ export const Modal = ({
   return (
     <div
       className={cn(
-        "fixed inset-0 z-50 flex items-center justify-center bg-black/50",
+        "fixed inset-0 z-[999] flex items-center justify-center bg-default/50 p-[1.6rem]",
         overlayClassName
       )}
       onClick={handleOverlayClick}
@@ -54,36 +54,26 @@ export const Modal = ({
         role="dialog"
         aria-modal="true"
         className={cn(
-          "rounded-[10px] border border-primary bg-inverse",
+          "max-w-full rounded-[10px] border border-primary bg-inverse",
           MODAL_VARIANT_CLASSES[variant],
           className
         )}
         onClick={(event) => event.stopPropagation()}
       >
         {title && (
-          <div className={cn("head3-m text-default text-center", titleClassName)}>
+          <div className={cn("head3-m text-center text-default", titleClassName)}>
             {title}
           </div>
         )}
 
         {children && (
-          <div
-            className={cn(
-              title && "mt-[1.6rem]",
-              bodyClassName
-            )}
-          >
+          <div className={cn(title && "mt-[1.6rem]", bodyClassName)}>
             {children}
           </div>
         )}
 
         {footer && (
-          <div
-            className={cn(
-              "mt-[2rem]",
-              footerClassName
-            )}
-          >
+          <div className={cn("mt-[2rem]", footerClassName)}>
             {footer}
           </div>
         )}
