@@ -18,14 +18,13 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const activeKey =
-    pathname === "/main"
-      ? "home"
-      : pathname === "/order"
-        ? "order"
-        : pathname === "/mypage"
-          ? "my"
-          : "home";
+  const activeKey = pathname.startsWith("/mypage")
+    ? "my"
+    : pathname.startsWith("/order")
+      ? "order"
+      : pathname.startsWith("/main")
+        ? "home"
+        : "home";
 
   const handleTabChange = (key: string) => {
     if (key === "home") {
