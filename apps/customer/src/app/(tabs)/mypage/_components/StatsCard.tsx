@@ -1,9 +1,16 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Card, Icon } from "@compasser/design-system";
 import { stats } from "../_constants/stats";
 
 export const StatsCard = () => {
+  const router = useRouter();
+
+  const handleMoveDetailPage = () => {
+    router.push("/mypage/detail");
+  };
+
   return (
     <Card variant="gray-200-elevated">
       <div>
@@ -12,6 +19,7 @@ export const StatsCard = () => {
 
           <button
             type="button"
+            onClick={handleMoveDetailPage}
             className="flex items-center gap-[0.2rem] text-gray-600"
           >
             <span className="body2-m text-gray-600">상세보기</span>
