@@ -44,7 +44,7 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
   };
 
   return (
-    <div className="mx-auto flex h-screen w-full max-w-[42.5rem] flex-col overflow-hidden bg-white">
+    <div className="mx-auto flex h-dvh w-full max-w-[42.5rem] flex-col overflow-hidden bg-white">
       <div className="flex-1 overflow-y-auto pb-[8.4rem]">
         {children}
       </div>
