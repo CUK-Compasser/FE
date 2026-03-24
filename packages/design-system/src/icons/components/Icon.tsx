@@ -75,6 +75,8 @@ export const Icon = ({
   const combinedClassName = clsx(
     "inline-block shrink-0",
     "transform",
+    "outline-none focus:outline-none",
+    "[-webkit-tap-highlight-color:transparent]",
     rotateClass,
     hasRotateAnimation && "transition-transform duration-200",
     className,
