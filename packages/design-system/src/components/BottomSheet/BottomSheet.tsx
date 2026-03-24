@@ -37,16 +37,16 @@ export const BottomSheet = ({
     <div
       className={cn(
         "fixed inset-0 z-9999 flex items-end justify-center",
-        overlay ? "bg-black/50" : "bg-transparent",
+        overlay ? "bg-black/50" : "pointer-events-none bg-transparent",
         overlayClassName
       )}
-      onClick={handleOverlayClick}
+      onClick={overlay ? handleOverlayClick : undefined}
     >
       <div
         role="dialog"
         aria-modal="true"
         className={cn(
-          "w-full border-x border-t border-primary shadow-[0_-4px_4px_rgba(0,0,0,0.1)]",
+          "pointer-events-auto w-full border-x border-t border-primary shadow-[0_-4px_4px_rgba(0,0,0,0.1)]",
           BOTTOM_SHEET_VARIANT_CLASSES[variant],
           className
         )}
