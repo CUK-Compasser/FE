@@ -10,6 +10,7 @@ export const Input = ({
   errorMessage,
   className,
   inputClassName,
+  containerClassName,
   disabled = false,
   showPasswordToggle = true,
   inputStyle = "default",
@@ -24,14 +25,14 @@ export const Input = ({
   const currentType =
     isPasswordInput && isPasswordVisible ? "text" : type;
 
-  const containerClassName = isAddressInput
+  const baseContainerClassName = isAddressInput
     ? "rounded-[999px] bg-gray-200"
     : cn(
-      "rounded-[8px] border",
-      error
-        ? "border-accent"
-        : "border-gray-500 focus-within:border-primary"
-    );
+        "rounded-[8px] border",
+        error
+          ? "border-accent"
+          : "border-gray-500 focus-within:border-primary"
+      );
 
   const inputFieldClassName = isAddressInput
     ? "rounded-[999px] bg-gray-200 px-[1rem] py-[1rem]"
@@ -42,6 +43,7 @@ export const Input = ({
       <div
         className={cn(
           "flex w-full items-center transition-colors",
+          baseContainerClassName,
           containerClassName,
           disabled && "cursor-not-allowed opacity-60"
         )}
