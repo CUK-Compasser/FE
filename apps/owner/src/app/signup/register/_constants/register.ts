@@ -1,4 +1,9 @@
-import type { BusinessHours, RandomBoxItem } from "../_types/register";
+import type {
+  BusinessHours,
+  RandomBoxItem,
+  DayKey,
+  BusinessHourFormValue,
+} from "../_types/register";
 
 export const businessHoursData: BusinessHours = {
   fri: "09:00-21:00",
@@ -37,3 +42,21 @@ export const initialRandomBoxes: RandomBoxItem[] = [
 ];
 
 export const tagOptions = ["카페", "베이커리", "식당"];
+
+export const dayOptions: { key: DayKey; label: string }[] = [
+  { key: "mon", label: "월" },
+  { key: "tue", label: "화" },
+  { key: "wed", label: "수" },
+  { key: "thu", label: "목" },
+  { key: "fri", label: "금" },
+  { key: "sat", label: "토" },
+  { key: "sun", label: "일" },
+];
+
+export const initialBusinessHourFormValue: BusinessHourFormValue = {
+  openTime: "",
+  closeTime: "",
+  hasBreakTime: null,
+  breakStartTime: "",
+  breakEndTime: "",
+};
