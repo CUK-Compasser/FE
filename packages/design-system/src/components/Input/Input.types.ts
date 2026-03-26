@@ -1,5 +1,9 @@
+import type { InputHTMLAttributes } from "react";
+
+export type InputStyle = "default" | "address";
+
 export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, "size" | "className"> {
   error?: boolean;
   errorMessage?: string;
   className?: string;
@@ -7,5 +11,5 @@ export interface InputProps
   containerClassName?: string;
   disabled?: boolean;
   showPasswordToggle?: boolean;
-  inputStyle?: "default" | "address";
+  inputStyle?: InputStyle;
 }
