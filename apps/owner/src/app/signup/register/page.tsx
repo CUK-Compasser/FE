@@ -8,6 +8,7 @@ import {
   Card,
   Icon,
 } from "@compasser/design-system";
+import { useRouter } from "next/navigation";
 
 type BusinessHours = {
   mon: string;
@@ -66,6 +67,8 @@ const initialRandomBoxes: RandomBoxItem[] = [
 const tagOptions = ["카페", "베이커리", "식당"];
 
 export default function StoreRegisterPage() {
+  const router = useRouter();
+  
   const [selectedAccountType, setSelectedAccountType] = useState<
     "bank" | "holder" | null
   >(null);
@@ -145,7 +148,7 @@ export default function StoreRegisterPage() {
   };
 
   const handleCompleteRegister = () => {
-    console.log("등록 완료");
+    router.push("/main");
   };
 
   return (
