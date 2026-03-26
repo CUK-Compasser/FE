@@ -28,11 +28,11 @@ export const Input = ({
   const baseContainerClassName = isAddressInput
     ? "rounded-[999px] bg-gray-200"
     : cn(
-        "rounded-[8px] border",
-        error
-          ? "border-accent"
-          : "border-gray-500 focus-within:border-primary"
-      );
+      "rounded-[8px] border",
+      error
+        ? "border-accent"
+        : "border-gray-500 focus-within:border-primary"
+    );
 
   const inputFieldClassName = isAddressInput
     ? "rounded-[999px] bg-gray-200 px-[1rem] py-[1rem]"
