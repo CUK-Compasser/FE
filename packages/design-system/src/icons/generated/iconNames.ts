@@ -2,6 +2,7 @@
 export const iconNames = [
   "Alarm",
   "BackButton",
+  "Camera",
   "ChevronDown",
   "Clock",
   "CloseButton",
