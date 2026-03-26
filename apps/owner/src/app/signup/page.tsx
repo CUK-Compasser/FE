@@ -7,7 +7,6 @@ export default function SignupPage() {
   const router = useRouter();
 
   const handleSignup = () => {
-    console.log("회원가입");
     router.push("/signup/business");
   };
 
