@@ -17,6 +17,8 @@ import type {
 export default function OrderStatusPage() {
   const [activeTab, setActiveTab] = useState<OrderTabKey>("reservation");
   const [orders, setOrders] = useState<ReservationItem[]>(INITIAL_RESERVATIONS);
+  const isOrderTabKey = (key: string): key is OrderTabKey =>
+   key === "reservation" || key === "order";
 
   const [acceptModal, setAcceptModal] = useState<AcceptModalState>({
     isOpen: false,
@@ -120,7 +122,9 @@ export default function OrderStatusPage() {
             { key: "order", label: "주문" },
           ]}
           activeKey={activeTab}
-          onTabChange={(key) => setActiveTab(key as OrderTabKey)}
+          onTabChange={(key) => {
+            if (isOrderTabKey(key)) setActiveTab(key);
+          }}
         />
 
         <section className="flex-1 overflow-y-auto px-[1.6rem] pt-[2.8rem] pb-[10rem]">
