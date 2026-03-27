@@ -24,6 +24,7 @@ export const iconNames = [
   "ProfileCharacter",
   "RadioActive",
   "RadioDeactive",
+  "Stamp",
   "StoreIcon"
 ] as const;
 export type IconName = typeof iconNames[number];
