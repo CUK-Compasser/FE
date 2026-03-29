@@ -16,6 +16,7 @@ export const iconNames = [
   "Mail",
   "MapIcon",
   "MapPin",
+  "Menu",
   "My",
   "NextButton",
   "Notice",
@@ -25,6 +26,8 @@ export const iconNames = [
   "RadioActive",
   "RadioDeactive",
   "Stamp",
-  "StoreIcon"
+  "StoreIcon",
+  "ToggleDown",
+  "ToggleUp"
 ] as const;
 export type IconName = typeof iconNames[number];
