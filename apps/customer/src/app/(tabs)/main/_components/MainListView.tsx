@@ -73,7 +73,7 @@ export default function MainListView() {
             onCategoryClick={handleCategoryClick}
           />
 
-          <div className="mt-[1.2rem] flex flex-col gap-[1.2rem] pb-[2rem]">
+          <div className="mt-[1.2rem] flex flex-col gap-[1.2rem] pb-[9.6rem]">
             {filteredAndSortedItems.map((item) => (
               <MainStoreCard key={item.id} item={item} />
             ))}

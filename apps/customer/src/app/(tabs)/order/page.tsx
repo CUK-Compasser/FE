@@ -25,7 +25,7 @@ export default function OrderPage() {
         onTabChange={(key) => setActiveTab(key as OrderTabKey)}
       />
 
-      <section className="flex-1 overflow-y-auto px-[1.6rem] pt-[3.2rem] pb-[3.2rem]">
+      <section className="flex-1 overflow-y-auto px-[1.6rem] pt-[3.2rem] pb-[9.6rem]">
         {orders.length > 0 ? (
           <div className="flex flex-col gap-[1.2rem]">
             {orders.map((order) => (
