@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Icon } from "@compasser/design-system";
 import StoreMenuCard from "./StoreMenuCard";
 import type { DayKey, StoreDetailItem } from "../_types/store-detail";
@@ -43,12 +44,17 @@ const getTodayDayKeyInKorea = (): DayKey => {
 export default function StoreDetailContent({
   store,
 }: StoreDetailContentProps) {
+  const router = useRouter();
   const [isHoursOpen, setIsHoursOpen] = useState(false);
 
   const todayKey = useMemo(() => getTodayDayKeyInKorea(), []);
   const todayHours = store.businessHours[todayKey];
 
   const currentBusinessText = `영업중 ${todayHours.open} ~ ${todayHours.close}`;
+
+  const handleMenuClick = (menuId: number) => {
+    router.push(`/main/store/${store.id}/purchase?menuId=${menuId}`);
+  };
 
   return (
     <div className="min-h-screen w-full bg-background">
@@ -60,7 +66,7 @@ export default function StoreDetailContent({
         />
       </div>
 
-      <main className="relative z-10 mt-[-1.6rem] block w-full min-h-[calc(100vh-18.4rem)] rounded-t-[20px] bg-inverse pt-[2rem] pb-[10rem]">
+      <main className="relative z-10 mt-[-1.6rem] block min-h-[calc(100vh-18.4rem)] w-full rounded-t-[20px] bg-inverse pt-[2rem] pb-[10rem]">
         <div className="px-[1.6rem]">
           <h1 className="head2-m text-default">{store.storeName}</h1>
 
@@ -168,7 +174,11 @@ export default function StoreDetailContent({
 
             <div className="mt-[1.6rem] flex flex-col gap-[1.2rem]">
               {store.menus.map((menu) => (
-                <StoreMenuCard key={menu.id} item={menu} />
+                <StoreMenuCard
+                  key={menu.id}
+                  item={menu}
+                  onClick={() => handleMenuClick(menu.id)}
+                />
               ))}
             </div>
           </div>
