@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { Icon } from "@compasser/design-system";
+import QRStampModal from "./QRStampModal";
 
 interface CafeIntroProps {
   cafeName: string;
@@ -27,37 +29,60 @@ const formatCafeName = (name: string) => {
 
   return {
     firstLine: name.slice(0, 10).trim(),
-    secondLine: name.slice(10).trim(),
+      secondLine: name.slice(10).trim(),
   };
 };
 
 export default function CafeIntro({ cafeName }: CafeIntroProps) {
   const { firstLine, secondLine } = formatCafeName(cafeName);
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+
+  const handleOpenQrModal = () => {
+    setIsQrModalOpen(true);
+  };
+
+  const handleCloseQrModal = () => {
+    setIsQrModalOpen(false);
+  };
+
+  const handleSubmitStamp = () => {
+    console.log("적립하기");
+  };
 
   return (
-    <section className="flex items-start justify-between">
-      <div className="pt-[0.5rem]">
-        <p className="head3-m text-gray-700">어서오세요!</p>
+    <>
+      <section className="flex items-start justify-between">
+        <div className="pt-[0.5rem]">
+          <p className="head3-m text-gray-700">어서오세요!</p>
 
-        <div className="mt-[0.4rem]">
-          <p
-            className="head2-m whitespace-pre-line text-primary"
-            style={{ textShadow: "0 4px 3px rgba(0, 0, 0, 0.2)" }}
-          >
-            {firstLine}
-            {secondLine ? `\n${secondLine}` : ""}
-          </p>
+          <div className="mt-[0.4rem]">
+            <p
+              className="head2-m whitespace-pre-line text-primary"
+              style={{ textShadow: "0 4px 3px rgba(0, 0, 0, 0.2)" }}
+            >
+              {firstLine}
+              {secondLine ? `\n${secondLine}` : ""}
+            </p>
+          </div>
+
+          <p className="mt-[0.4rem] head3-m text-gray-700">입니다.</p>
         </div>
 
-        <p className="mt-[0.4rem] head3-m text-gray-700">입니다.</p>
-      </div>
+        <Icon
+          name="Stamp"
+          width={100}
+          height={100}
+          className="shrink-0 cursor-pointer"
+          isInteractive
+          onClick={handleOpenQrModal}
+        />
+      </section>
 
-      <Icon
-        name="Stamp"
-        width={100}
-        height={100}
-        className="shrink-0"
+      <QRStampModal
+        open={isQrModalOpen}
+        onClose={handleCloseQrModal}
+        onSubmit={handleSubmitStamp}
       />
-    </section>
+    </>
   );
 }
