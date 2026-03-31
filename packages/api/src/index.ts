@@ -1,4 +1,4 @@
-export * from "./core/http";
+export * from "./core/apiClient";
 export * from "./core/query-client";
 export * from "./core/token-store";
 export * from "./core/types";
