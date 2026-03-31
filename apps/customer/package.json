@@ -8,6 +8,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@compasser/api": "workspace:^",
     "@compasser/design-system": "workspace:*",
     "@tanstack/react-query": "^5.90.21",
     "next": "16.1.6",
