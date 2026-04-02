@@ -2,16 +2,18 @@
 
 import { Tag } from "@compasser/design-system";
 
+type FixedTag = "카페" | "베이커리" | "식당";
+
 interface TagSectionProps {
-  tagOptions: string[];
-  selectedTags: string[];
-  onToggleTag: (tag: string) => void;
+  tagOptions: FixedTag[];
+  selectedTag: FixedTag | "";
+  onSelectTag: (tag: FixedTag) => void;
 }
 
 export default function TagSection({
   tagOptions,
-  selectedTags,
-  onToggleTag,
+  selectedTag,
+  onSelectTag,
 }: TagSectionProps) {
   return (
     <div className="mt-[3.6rem] w-full">
@@ -23,8 +25,8 @@ export default function TagSection({
           <Tag
             key={tag}
             variant="pill-wide"
-            selected={selectedTags.includes(tag)}
-            onClick={() => onToggleTag(tag)}
+            selected={selectedTag === tag}
+            onClick={() => onSelectTag(tag)}
           >
             {tag}
           </Tag>

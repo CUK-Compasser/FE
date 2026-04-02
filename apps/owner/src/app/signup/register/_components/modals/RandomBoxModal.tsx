@@ -2,41 +2,56 @@
 
 import { useEffect, useState } from "react";
 import { Button, Input, Modal, cn } from "@compasser/design-system";
-import TimeRangeField from "./TimeRangeField";
-import CountStepper from "./CountStepper";
-import type { RandomBoxFormValue } from "../../_types/register";
+
+interface RandomBoxFormValue {
+  boxName: string;
+  stock: number;
+  price: number;
+  buyLimit: number;
+  content: string;
+  boxId?: number;
+}
 
 interface RandomBoxModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit?: (data: RandomBoxFormValue) => void;
+  onSubmit?: (data: RandomBoxFormValue) => void | Promise<void>;
+  initialValue?: RandomBoxFormValue | null;
 }
 
 const initialFormValue: RandomBoxFormValue = {
-  name: "",
-  quantity: 0,
-  limit: 0,
-  pickupStartTime: "00:00",
-  pickupEndTime: "00:00",
-  description: "",
+  boxName: "",
+  stock: 0,
+  price: 0,
+  buyLimit: 0,
+  content: "",
 };
 
 export default function RandomBoxModal({
   open,
   onClose,
   onSubmit,
+  initialValue,
 }: RandomBoxModalProps) {
   const [form, setForm] = useState<RandomBoxFormValue>(initialFormValue);
 
   useEffect(() => {
     if (!open) {
       setForm(initialFormValue);
+      return;
     }
-  }, [open]);
+
+    if (initialValue) {
+      setForm(initialValue);
+      return;
+    }
+
+    setForm(initialFormValue);
+  }, [open, initialValue]);
 
   const updateField = <K extends keyof RandomBoxFormValue>(
     key: K,
-    value: RandomBoxFormValue[K]
+    value: RandomBoxFormValue[K],
   ) => {
     setForm((prev) => ({
       ...prev,
@@ -44,8 +59,13 @@ export default function RandomBoxModal({
     }));
   };
 
-  const handleSubmit = () => {
-    onSubmit?.(form);
+  const handleSubmit = async () => {
+    if (!form.boxName.trim()) return;
+    if (form.stock <= 0) return;
+    if (form.price < 0) return;
+    if (form.buyLimit <= 0) return;
+
+    await onSubmit?.(form);
     onClose();
   };
 
@@ -63,60 +83,68 @@ export default function RandomBoxModal({
           <p className="body1-r shrink-0 text-gray-700">랜덤박스 이름</p>
 
           <Input
-            value={form.name}
-            onChange={(event) => updateField("name", event.target.value)}
+            value={form.boxName}
+            onChange={(event) => updateField("boxName", event.target.value)}
             className="w-[17rem]"
             containerClassName="border-gray-300"
             inputClassName="text-gray-600"
           />
         </div>
 
-        <div className="flex w-full items-center gap-[1.6rem]">
+        <div className="flex w-full items-center justify-between gap-[1.6rem]">
           <p className="body1-r shrink-0 text-gray-700">총 수량</p>
 
-          <div className="ml-auto flex w-[17rem] justify-start">
-            <CountStepper
-              value={form.quantity}
-              onChange={(value) => updateField("quantity", value)}
-              min={0}
-            />
-          </div>
+          <Input
+            type="number"
+            value={String(form.stock)}
+            onChange={(event) =>
+              updateField("stock", Number(event.target.value || 0))
+            }
+            className="w-[17rem]"
+            containerClassName="border-gray-300"
+            inputClassName="text-gray-600"
+          />
         </div>
 
-        <div className="flex w-full items-center gap-[1.6rem]">
+        <div className="flex w-full items-center justify-between gap-[1.6rem]">
+          <p className="body1-r shrink-0 text-gray-700">가격</p>
+
+          <Input
+            type="number"
+            value={String(form.price)}
+            onChange={(event) =>
+              updateField("price", Number(event.target.value || 0))
+            }
+            className="w-[17rem]"
+            containerClassName="border-gray-300"
+            inputClassName="text-gray-600"
+          />
+        </div>
+
+        <div className="flex w-full items-center justify-between gap-[1.6rem]">
           <p className="body1-r shrink-0 text-gray-700">구매 제한 개수</p>
 
-          <div className="ml-auto flex w-[17rem] justify-start">
-            <CountStepper
-              value={form.limit}
-              onChange={(value) => updateField("limit", value)}
-              min={0}
-            />
-          </div>
-        </div>
-
-        <div className="flex w-full items-center gap-[1.6rem]">
-          <p className="body1-r shrink-0 text-gray-700">픽업 시간</p>
-
-          <div className="ml-auto flex w-[17rem] justify-start">
-            <TimeRangeField
-              startTime={form.pickupStartTime}
-              endTime={form.pickupEndTime}
-              onChangeStartTime={(value) => updateField("pickupStartTime", value)}
-              onChangeEndTime={(value) => updateField("pickupEndTime", value)}
-            />
-          </div>
+          <Input
+            type="number"
+            value={String(form.buyLimit)}
+            onChange={(event) =>
+              updateField("buyLimit", Number(event.target.value || 0))
+            }
+            className="w-[17rem]"
+            containerClassName="border-gray-300"
+            inputClassName="text-gray-600"
+          />
         </div>
 
         <div>
           <p className="body1-r text-gray-700">랜덤박스 설명란</p>
 
           <textarea
-            value={form.description}
-            onChange={(event) => updateField("description", event.target.value)}
+            value={form.content}
+            onChange={(event) => updateField("content", event.target.value)}
             className={cn(
               "mt-[0.4rem] h-[15rem] w-full resize-none rounded-[8px] border border-gray-300 px-[1rem] py-[1rem]",
-              "body1-r text-gray-700 outline-none placeholder:text-gray-500"
+              "body1-r text-gray-700 outline-none placeholder:text-gray-500",
             )}
           />
         </div>
@@ -129,7 +157,7 @@ export default function RandomBoxModal({
             kind="default"
             onClick={handleSubmit}
           >
-            추가하기
+            {form.boxId ? "수정하기" : "추가하기"}
           </Button>
         </div>
       </div>
