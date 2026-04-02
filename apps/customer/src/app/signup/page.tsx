@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input, Button } from "@compasser/design-system";
+import { useSignupMutation } from "@/shared/queries/mutation/auth/useSignupMutation";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -12,29 +13,52 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [submitError, setSubmitError] = useState("");
+
+  const { mutateAsync: signUp, isPending } = useSignupMutation();
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  const isEmailInvalid =
-    email.length > 0 && !emailRegex.test(email);
+  const isEmailInvalid = email.length > 0 && !emailRegex.test(email);
 
   const isPasswordMismatch =
     password.length > 0 &&
     passwordConfirm.length > 0 &&
     password !== passwordConfirm;
 
-  const handleSignup = () => {
-    if (isEmailInvalid || isPasswordMismatch) return;
+  const isFormInvalid =
+    !name.trim() ||
+    !nickname.trim() ||
+    !email.trim() ||
+    !password.trim() ||
+    !passwordConfirm.trim() ||
+    isEmailInvalid ||
+    isPasswordMismatch;
 
-    console.log("회원가입", {
-      name,
-      nickname,
-      email,
-      password,
-      passwordConfirm,
-    });
+  const handleSignup = async () => {
+    if (isFormInvalid || isPending) return;
 
-    router.push("/main");
+    setSubmitError("");
+
+    try {
+      await signUp({
+        memberName: name,
+        nickname,
+        email,
+        password,
+        passwordConfirm,
+      });
+
+      router.push("/login");
+    } catch (error) {
+      console.error("회원가입 실패", error);
+
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : "회원가입 중 오류가 발생했습니다.",
+      );
+    }
   };
 
   return (
@@ -96,6 +120,10 @@ export default function SignupPage() {
               errorMessage="비밀번호가 일치하지 않습니다."
             />
           </div>
+
+          {submitError ? (
+            <p className="body3-m text-red-500">{submitError}</p>
+          ) : null}
         </div>
       </section>
 
@@ -106,8 +134,9 @@ export default function SignupPage() {
           kind="default"
           variant="primary"
           onClick={handleSignup}
+          disabled={isFormInvalid || isPending}
         >
-          회원가입
+          {isPending ? "회원가입 중..." : "회원가입"}
         </Button>
       </div>
     </main>
