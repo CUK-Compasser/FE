@@ -1,10 +1,10 @@
 "use client";
 
 import { Button, Card } from "@compasser/design-system";
-import type { RandomBoxItem } from "../../_types/register";
+import type { RandomBoxRespDTO } from "@compasser/api";
 
 interface RandomBoxSectionProps {
-  randomBoxes: RandomBoxItem[];
+  randomBoxes: RandomBoxRespDTO[];
   selectedRandomBoxIds: number[];
   onToggleRandomBoxSelection: (id: number) => void;
   onDeleteRandomBoxes: () => void;
@@ -65,23 +65,23 @@ export default function RandomBoxSection({
             }
           >
             {randomBoxes.map((item) => {
-              const isSelected = selectedRandomBoxIds.includes(item.id);
+              const isSelected = selectedRandomBoxIds.includes(item.boxId);
 
               return (
                 <button
-                  key={item.id}
+                  key={item.boxId}
                   type="button"
-                  onClick={() => onToggleRandomBoxSelection(item.id)}
+                  onClick={() => onToggleRandomBoxSelection(item.boxId)}
                   className={`grid w-full grid-cols-4 px-[1rem] py-[1rem] text-center ${
                     isSelected ? "bg-background" : "bg-white"
                   }`}
                 >
-                  <div className="body2-r text-default">{item.name}</div>
-                  <div className="body2-r text-default">{item.quantity}</div>
+                  <div className="body2-r text-default">{item.boxName}</div>
+                  <div className="body2-r text-default">{item.stock}</div>
                   <div className="body2-r text-default">
                     {item.price.toLocaleString()}
                   </div>
-                  <div className="body2-r text-default">{item.limit}</div>
+                  <div className="body2-r text-default">{item.buyLimit}</div>
                 </button>
               );
             })}

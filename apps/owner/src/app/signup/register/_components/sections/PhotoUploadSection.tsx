@@ -7,11 +7,13 @@ import { Icon } from "@compasser/design-system";
 interface PhotoUploadSectionProps {
   previewUrl?: string;
   onChangePhoto: (file: File) => void;
+  onRemovePhoto: () => void | Promise<void>;
 }
 
 export default function PhotoUploadSection({
   previewUrl,
   onChangePhoto,
+  onRemovePhoto,
 }: PhotoUploadSectionProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -24,8 +26,14 @@ export default function PhotoUploadSection({
     if (!file) return;
 
     onChangePhoto(file);
-
     event.target.value = "";
+  };
+
+  const handleClickRemove = async (
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    event.stopPropagation();
+    await onRemovePhoto();
   };
 
   return (
@@ -41,12 +49,23 @@ export default function PhotoUploadSection({
         className="relative flex h-[18rem] w-full items-center justify-center overflow-hidden rounded-[10px] bg-background"
       >
         {previewUrl ? (
-          <Image
-            src={previewUrl}
-            alt="업로드한 대표 이미지 미리보기"
-            fill
-            className="object-cover"
-          />
+          <>
+            <Image
+              src={previewUrl}
+              alt="업로드한 대표 이미지 미리보기"
+              fill
+              className="object-cover"
+            />
+
+            <button
+              type="button"
+              onClick={handleClickRemove}
+              className="absolute right-[0.8rem] top-[0.8rem] z-10 flex h-[3.2rem] w-[3.2rem] items-center justify-center rounded-full bg-white/90 shadow"
+              aria-label="사진 삭제"
+            >
+              <Icon name="CloseButton" width={16} height={16} />
+            </button>
+          </>
         ) : (
           <Icon name="Camera" width={24} height={24} />
         )}

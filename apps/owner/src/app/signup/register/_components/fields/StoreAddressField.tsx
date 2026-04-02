@@ -3,10 +3,14 @@
 import { Button, Input } from "@compasser/design-system";
 
 interface StoreAddressFieldProps {
+  value: string;
+  onChange: (value: string) => void;
   onSearchAddress: () => void;
 }
 
 export default function StoreAddressField({
+  value,
+  onChange,
   onSearchAddress,
 }: StoreAddressFieldProps) {
   return (
@@ -15,7 +19,12 @@ export default function StoreAddressField({
 
       <div className="flex items-end gap-[1rem]">
         <div className="min-w-0 flex-1">
-          <Input type="text" placeholder="상점 주소를 입력해주세요" />
+          <Input
+            type="text"
+            placeholder="상점 주소를 입력해주세요"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+          />
         </div>
 
         <Button

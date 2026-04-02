@@ -1,25 +1,49 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Button, Modal } from "@compasser/design-system";
-
-import { cn } from "@compasser/design-system";
-import {
-  dayOptions,
-  initialBusinessHourFormValue,
-} from "../../_constants/register";
-import type {
-  BusinessHourFormValue,
-  BreakTimeOption,
-  DayKey,
-} from "../../_types/register";
+import { useEffect, useMemo, useState } from "react";
+import { Button, Modal, cn } from "@compasser/design-system";
 import TimeRangeField from "./TimeRangeField";
+import {
+  EMPTY_BUSINESS_HOURS,
+  parseBusinessHours,
+  type BusinessHoursValue,
+  type DayKey,
+} from "../../_utils/business-hours";
+
+type BreakTimeOption = "yes" | "no" | null;
+
+interface BusinessHourFormValue {
+  openTime: string;
+  closeTime: string;
+  hasBreakTime: BreakTimeOption;
+  breakStartTime: string;
+  breakEndTime: string;
+}
 
 interface BusinessHoursModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit?: (data: Record<DayKey, BusinessHourFormValue>) => void;
+  initialValue?: BusinessHoursValue;
+  onSubmit?: (data: BusinessHoursValue) => void;
 }
+
+const dayOptions: { key: DayKey; label: string }[] = [
+  { key: "mon", label: "월" },
+  { key: "tue", label: "화" },
+  { key: "wed", label: "수" },
+  { key: "thu", label: "목" },
+  { key: "fri", label: "금" },
+  { key: "sat", label: "토" },
+  { key: "sun", label: "일" },
+];
+
+const initialBusinessHourFormValue: BusinessHourFormValue = {
+  openTime: "",
+  closeTime: "",
+  hasBreakTime: null,
+  breakStartTime: "",
+  breakEndTime: "",
+};
 
 const getEmptyBusinessHoursForm = (): Record<DayKey, BusinessHourFormValue> => ({
   mon: { ...initialBusinessHourFormValue },
@@ -31,9 +55,38 @@ const getEmptyBusinessHoursForm = (): Record<DayKey, BusinessHourFormValue> => (
   sun: { ...initialBusinessHourFormValue },
 });
 
+const toFormValue = (
+  source?: BusinessHoursValue,
+): Record<DayKey, BusinessHourFormValue> => {
+  const normalized = parseBusinessHours(source);
+  const base = getEmptyBusinessHoursForm();
+
+  (Object.keys(base) as DayKey[]).forEach((day) => {
+    const value = normalized[day];
+
+    if (!value || value === "closed") {
+      return;
+    }
+
+    const [open, close] = value.split("-");
+
+    base[day] = {
+      ...base[day],
+      openTime: open ?? "",
+      closeTime: close ?? "",
+      hasBreakTime: "no",
+      breakStartTime: "",
+      breakEndTime: "",
+    };
+  });
+
+  return base;
+};
+
 export default function BusinessHoursModal({
   open,
   onClose,
+  initialValue,
   onSubmit,
 }: BusinessHoursModalProps) {
   const [selectedDay, setSelectedDay] = useState<DayKey>("mon");
@@ -41,11 +94,18 @@ export default function BusinessHoursModal({
     Record<DayKey, BusinessHourFormValue>
   >(getEmptyBusinessHoursForm());
 
+  useEffect(() => {
+    if (!open) return;
+
+    setBusinessHoursForm(toFormValue(initialValue));
+    setSelectedDay("mon");
+  }, [open, initialValue]);
+
   const selectedDayValue = businessHoursForm[selectedDay];
 
   const updateSelectedDayField = (
     key: keyof BusinessHourFormValue,
-    value: string | BreakTimeOption | null
+    value: string | BreakTimeOption,
   ) => {
     setBusinessHoursForm((prev) => ({
       ...prev,
@@ -77,23 +137,16 @@ export default function BusinessHoursModal({
   };
 
   const isDayCompleted = (value: BusinessHourFormValue) => {
-    const hasOpenClose = value.openTime.trim() !== "" && value.closeTime.trim() !== "";
+    const hasOpenClose =
+      value.openTime.trim() !== "" && value.closeTime.trim() !== "";
 
-    if (!hasOpenClose) {
-      return false;
-    }
+    if (!hasOpenClose) return false;
+    if (value.hasBreakTime === "no" || value.hasBreakTime === null) return true;
 
-    if (value.hasBreakTime === "no") {
-      return true;
-    }
-
-    if (value.hasBreakTime === "yes") {
-      return (
-        value.breakStartTime.trim() !== "" && value.breakEndTime.trim() !== ""
-      );
-    }
-
-    return false;
+    return (
+      value.breakStartTime.trim() !== "" &&
+      value.breakEndTime.trim() !== ""
+    );
   };
 
   const completedDays = useMemo(() => {
@@ -108,11 +161,24 @@ export default function BusinessHoursModal({
   }, [completedDays]);
 
   const handleSubmit = () => {
-    if (!isRegisterButtonEnabled) {
-      return;
-    }
+    if (!isRegisterButtonEnabled) return;
 
-    onSubmit?.(businessHoursForm);
+    const formatted = (Object.keys(businessHoursForm) as DayKey[]).reduce<BusinessHoursValue>(
+      (acc, day) => {
+        const value = businessHoursForm[day];
+
+        if (!isDayCompleted(value)) {
+          acc[day] = "";
+          return acc;
+        }
+
+        acc[day] = `${value.openTime}-${value.closeTime}`;
+        return acc;
+      },
+      { ...EMPTY_BUSINESS_HOURS },
+    );
+
+    onSubmit?.(formatted);
     onClose();
   };
 
@@ -129,7 +195,6 @@ export default function BusinessHoursModal({
         <div className="flex flex-wrap gap-x-[0.95rem] gap-y-[0.8rem]">
           {dayOptions.map((day) => {
             const isSelected = selectedDay === day.key;
-            const isCompleted = completedDays[day.key];
 
             return (
               <button
@@ -140,21 +205,17 @@ export default function BusinessHoursModal({
                   "flex items-center justify-center rounded-[10px] border px-[1.2rem] py-[1rem]",
                   isSelected
                     ? "border-primary-variant bg-primary-variant"
-                    : "border-gray-300 bg-white"
+                    : "border-gray-300 bg-white",
                 )}
               >
                 <span
                   className={cn(
                     "body1-r",
-                    isSelected ? "text-gray-100" : "text-gray-600"
+                    isSelected ? "text-gray-100" : "text-gray-600",
                   )}
                 >
                   {day.label}
                 </span>
-
-                {isCompleted && !isSelected && (
-                  <span className="sr-only">입력 완료</span>
-                )}
               </button>
             );
           })}
@@ -167,8 +228,12 @@ export default function BusinessHoursModal({
             <TimeRangeField
               startTime={selectedDayValue.openTime}
               endTime={selectedDayValue.closeTime}
-              onChangeStartTime={(value) => updateSelectedDayField("openTime", value)}
-              onChangeEndTime={(value) => updateSelectedDayField("closeTime", value)}
+              onChangeStartTime={(value) =>
+                updateSelectedDayField("openTime", value)
+              }
+              onChangeEndTime={(value) =>
+                updateSelectedDayField("closeTime", value)
+              }
               className="ml-[5.2rem]"
             />
           </div>
@@ -185,7 +250,7 @@ export default function BusinessHoursModal({
                     "flex items-center justify-center rounded-[10px] border px-[1.2rem] py-[1rem]",
                     selectedDayValue.hasBreakTime === "yes"
                       ? "border-primary-variant bg-primary-variant"
-                      : "border-gray-300 bg-white"
+                      : "border-gray-300 bg-white",
                   )}
                 >
                   <span
@@ -193,7 +258,7 @@ export default function BusinessHoursModal({
                       "body1-r",
                       selectedDayValue.hasBreakTime === "yes"
                         ? "text-gray-100"
-                        : "text-gray-600"
+                        : "text-gray-600",
                     )}
                   >
                     유
@@ -207,7 +272,7 @@ export default function BusinessHoursModal({
                     "flex items-center justify-center rounded-[10px] border px-[1.2rem] py-[1rem]",
                     selectedDayValue.hasBreakTime === "no"
                       ? "border-primary-variant bg-primary-variant"
-                      : "border-gray-300 bg-white"
+                      : "border-gray-300 bg-white",
                   )}
                 >
                   <span
@@ -215,7 +280,7 @@ export default function BusinessHoursModal({
                       "body1-r",
                       selectedDayValue.hasBreakTime === "no"
                         ? "text-gray-100"
-                        : "text-gray-600"
+                        : "text-gray-600",
                     )}
                   >
                     무
