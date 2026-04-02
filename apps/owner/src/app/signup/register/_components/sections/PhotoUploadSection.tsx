@@ -1,7 +1,11 @@
 "use client";
 
+import { ChangeEvent, useRef } from "react";
+import Image from "next/image";
+import { Icon } from "@compasser/design-system";
+
 interface PhotoUploadSectionProps {
-  previewUrl: string;
+  previewUrl?: string;
   onChangePhoto: (file: File) => void;
   onRemovePhoto: () => void | Promise<void>;
 }
@@ -11,47 +15,69 @@ export default function PhotoUploadSection({
   onChangePhoto,
   onRemovePhoto,
 }: PhotoUploadSectionProps) {
-  const handleChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleOpenFilePicker = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleChangeFile = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (!file) return;
+
     onChangePhoto(file);
+    event.target.value = "";
+  };
+
+  const handleClickRemove = async (
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    event.stopPropagation();
+    await onRemovePhoto();
   };
 
   return (
     <div className="mt-[3.6rem] w-full">
       <p className="body2-m text-default">사진 첨부</p>
-      <p className="caption1-r text-gray-500">상점의 대표이미지를 추가해주세요!</p>
+      <p className="caption1-r pb-[0.2rem] text-gray-500">
+        상점의 대표 이미지를 추가해주세요!
+      </p>
 
-      <div className="pt-[1.4rem]">
+      <button
+        type="button"
+        onClick={handleOpenFilePicker}
+        className="relative flex h-[18rem] w-full items-center justify-center overflow-hidden rounded-[10px] bg-background"
+      >
         {previewUrl ? (
-          <div className="relative h-[18rem] w-full overflow-hidden rounded-[1.2rem] bg-gray-100">
-            <img
+          <>
+            <Image
               src={previewUrl}
-              alt="매장 대표 이미지"
-              className="h-full w-full object-cover"
+              alt="업로드한 대표 이미지 미리보기"
+              fill
+              className="object-cover"
             />
 
             <button
               type="button"
-              onClick={onRemovePhoto}
-              className="absolute right-[0.8rem] top-[0.8rem] flex h-[3.2rem] w-[3.2rem] items-center justify-center rounded-full bg-white/90 shadow"
+              onClick={handleClickRemove}
+              className="absolute right-[0.8rem] top-[0.8rem] z-10 flex h-[3.2rem] w-[3.2rem] items-center justify-center rounded-full bg-white/90 shadow"
               aria-label="사진 삭제"
             >
-              <span className="text-[1.8rem] leading-none">×</span>
+              <Icon name="CloseButton" width={16} height={16} />
             </button>
-          </div>
+          </>
         ) : (
-          <label className="flex h-[18rem] w-full cursor-pointer items-center justify-center rounded-[1.2rem] bg-gray-100">
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleChangeFile}
-            />
-            <span className="caption1-r text-gray-500">이미지 업로드</span>
-          </label>
+          <Icon name="Camera" width={24} height={24} />
         )}
-      </div>
+      </button>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleChangeFile}
+        className="hidden"
+      />
     </div>
   );
 }
