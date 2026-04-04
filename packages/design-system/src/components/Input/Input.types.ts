@@ -8,6 +8,8 @@ export interface InputProps
   errorMessage?: string;
   className?: string;
   inputClassName?: string;
+  containerClassName?: string;
+  disabled?: boolean;
   showPasswordToggle?: boolean;
   inputStyle?: InputStyle;
 }

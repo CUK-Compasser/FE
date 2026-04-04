@@ -1,0 +1,89 @@
+"use client";
+
+import { useState } from "react";
+import { Card } from "@compasser/design-system";
+import { ConfirmActionModal } from "./ConfirmActionModal";
+
+export const AccountCard = () => {
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+
+  const handleOpenLogoutModal = () => {
+    setIsLogoutModalOpen(true);
+  };
+
+  const handleCloseLogoutModal = () => {
+    setIsLogoutModalOpen(false);
+  };
+
+  const handleOpenWithdrawModal = () => {
+    setIsWithdrawModalOpen(true);
+  };
+
+  const handleCloseWithdrawModal = () => {
+    setIsWithdrawModalOpen(false);
+  };
+
+  const handleLogout = () => {
+    console.log("로그아웃");
+    setIsLogoutModalOpen(false);
+  };
+
+  const handleWithdraw = () => {
+    console.log("회원탈퇴");
+    setIsWithdrawModalOpen(false);
+  };
+
+  return (
+    <>
+      <Card variant="gray-200-elevated">
+        <div>
+          <p className="body1-m text-primary">내 계정</p>
+
+          <div className="mt-[0.8rem] border-t border-gray-200 px-[1rem] py-[1rem]">
+            <div className="flex flex-col items-start gap-[1.2rem]">
+              <button
+                type="button"
+                onClick={handleOpenLogoutModal}
+                className="body2-r text-default"
+              >
+                로그아웃
+              </button>
+
+              <button
+                type="button"
+                onClick={handleOpenWithdrawModal}
+                className="body2-r text-default"
+              >
+                회원탈퇴
+              </button>
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      <ConfirmActionModal
+        open={isLogoutModalOpen}
+        title="로그아웃하시겠습니까?"
+        cancelText="그만두기"
+        confirmText="로그아웃"
+        cancelVariant="gray"
+        confirmVariant="primary"
+        onClose={handleCloseLogoutModal}
+        onConfirm={handleLogout}
+      />
+
+      <ConfirmActionModal
+        open={isWithdrawModalOpen}
+        title="탈퇴하시겠습니까?"
+        cancelText="그만두기"
+        confirmText="탈퇴하기"
+        cancelVariant="gray"
+        confirmVariant="secondary"
+        onClose={handleCloseWithdrawModal}
+        onConfirm={handleWithdraw}
+        reverseButtons={true}
+      />
+    </>
+  );
+};

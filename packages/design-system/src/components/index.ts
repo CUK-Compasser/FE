@@ -6,3 +6,4 @@ export * from "./Card";
 export * from "./Tag";
 export * from "./Header";
 export * from "./BottomTabBar";
+export * from "./TopTabBar";

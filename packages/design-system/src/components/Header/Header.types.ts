@@ -20,6 +20,7 @@ export interface LocationSearchHeaderProps extends HeaderBaseProps {
   value?: string;
   placeholder?: string;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  onInputClick?: React.MouseEventHandler<HTMLInputElement>;
   onMapPinClick?: React.MouseEventHandler<SVGSVGElement>;
   onAlarmClick?: React.MouseEventHandler<SVGSVGElement>;
   mapPinIconName?: IconName;

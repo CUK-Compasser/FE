@@ -45,7 +45,7 @@ export const Tag = ({
       type={type}
       disabled={disabled}
       className={cn(
-        "inline-flex items-center justify-center whitespace-nowrap text-sm font-medium leading-none transition-colors",
+        "inline-flex items-center justify-center whitespace-nowrap body2-m leading-none transition-colors",
         "disabled:cursor-not-allowed disabled:opacity-50",
         styles.base,
         shouldApplySelectedStyle ? styles.selected : styles.unselected,

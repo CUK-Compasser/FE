@@ -31,6 +31,8 @@
 
 @utility border-primary { border-color: var(--color-primary); }
 @utility border-primary-variant { border-color: var(--color-primary-variant); }
+@utility border-secondary { border-color: var(--color-secondary); }
+@utility border-secondary-variant { border-color: var(--color-secondary-variant); }
 @utility border-accent { border-color: var(--color-accent); }
 @utility border-gray-500 { border-color: var(--color-gray-500); }
 @utility border-gray-200 { border-color: var(--color-gray-200); }
@@ -87,6 +89,17 @@
   :where(.ds-scrollbar)::-webkit-scrollbar-thumb {
     background: var(--ds-scroll-thumb);
     border-radius: 9999px;
+  }
+}
+
+@layer utilities {
+  :where(.ds-scrollbar-hidden) {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  :where(.ds-scrollbar-hidden)::-webkit-scrollbar {
+    display: none;
   }
 }
 

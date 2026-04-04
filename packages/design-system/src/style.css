@@ -54,6 +54,6 @@ html {
 
 @media (hover: hover) and (pointer: fine) {
   .app-wrapper {
-    max-width: 390px;
+    max-width: 425px;
   }
 }
