@@ -20,7 +20,7 @@ export interface StoreImageDTO {
   createdAt?: string;
 }
 
-export interface RandomBoxRespDTO {
+export interface StoreRandomBoxRespDTO {
   boxId: number;
   storeId: number;
   boxName: string;
@@ -45,7 +45,7 @@ export interface StoreRespDTO {
   businessHours?: JsonValue;
   tag: StoreTag;
   images: StoreImageDTO[];
-  randomBoxes: RandomBoxRespDTO[];
+  randomBoxes: StoreRandomBoxRespDTO[];
 }
 
 export interface GetStoreReqDTO {
