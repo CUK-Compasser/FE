@@ -17,6 +17,7 @@ export const Header = (props: HeaderProps) => {
       value,
       placeholder = "위치를 입력해주세요",
       onChange,
+      onInputClick,
       onMapPinClick,
       onAlarmClick,
       mapPinIconName = "MapPin",
@@ -39,6 +40,7 @@ export const Header = (props: HeaderProps) => {
               name={inputName}
               value={value}
               onChange={onChange}
+              onClick={onInputClick}
               placeholder={placeholder}
               disabled={inputDisabled}
               readOnly={inputReadOnly}

@@ -14,10 +14,28 @@ export interface StoreLocationUpdateReqDTO {
   inputAddress?: string;
 }
 
+export interface StoreImageDTO {
+  id: number;
+  imageUrl: string;
+  createdAt?: string;
+}
+
+export interface StoreRandomBoxRespDTO {
+  boxId: number;
+  storeId: number;
+  boxName: string;
+  stock: number;
+  price: number;
+  buyLimit: number;
+  content: string;
+  saleStatus: string;
+}
+
 export interface StoreRespDTO {
   storeId: number;
   storeManagerId: number;
   storeName: string;
+  storeEmail: string;
   storeDetails: string;
   inputAddress: string;
   roadAddress: string;
@@ -26,6 +44,8 @@ export interface StoreRespDTO {
   longitude: number;
   businessHours?: JsonValue;
   tag: StoreTag;
+  images: StoreImageDTO[];
+  randomBoxes: StoreRandomBoxRespDTO[];
 }
 
 export interface GetStoreReqDTO {
@@ -46,6 +66,7 @@ export interface SimpleStoreInfoDTO {
   storeName: string;
   roadAddress: string;
   jibunAddress: string;
+  storeEmail: string;
   businessHours?: JsonValue;
 }
 
@@ -67,4 +88,4 @@ export interface StoreAddressListParams {
 export type StoreListResponse = ApiResponse<GetStoreReqDTO[]>;
 export type StoreDetailResponse = ApiResponse<StoreRespDTO>;
 export type StoreSimpleResponse = ApiResponse<SimpleStoreInfoDTO>;
-export type StoreByAddressResponse = ApiResponse<Record<string, unknown>>;
+export type StoreByAddressResponse = ApiResponse<GetStoreReqDTO[]>;

@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import StoreDetailContent from "../_components/StoreDetailContent";
-import { MOCK_MAIN_STORE_DETAIL_MAP } from "../_constants/mockStoreDetail";
 
 interface StoreDetailPageProps {
   params: Promise<{
@@ -13,11 +12,10 @@ export default async function StoreDetailPage({
 }: StoreDetailPageProps) {
   const { id } = await params;
   const storeId = Number(id);
-  const store = MOCK_MAIN_STORE_DETAIL_MAP[storeId];
 
-  if (!store) {
+  if (Number.isNaN(storeId)) {
     notFound();
   }
 
-  return <StoreDetailContent store={store} />;
+  return <StoreDetailContent storeId={storeId} />;
 }

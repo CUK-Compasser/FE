@@ -22,6 +22,7 @@ const twMerge = extendTailwindMerge({
         "primary-variant",
         "primary-button",
         "secondary",
+        "secondary-variant",
         "accent",
         "default",
         "inverse",

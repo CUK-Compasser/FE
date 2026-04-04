@@ -8,9 +8,10 @@ interface MapStoreBottomSheetProps {
   onClose: () => void;
   id: number;
   storeName: string;
-  address: string;
-  email: string;
-  businessHours: string;
+  roadAddress: string;
+  jibunAddress: string;
+  email?: string;
+  businessHours?: string;
 }
 
 export default function MapStoreBottomSheet({
@@ -18,7 +19,8 @@ export default function MapStoreBottomSheet({
   onClose,
   id,
   storeName,
-  address,
+  roadAddress,
+  jibunAddress,
   email,
   businessHours,
 }: MapStoreBottomSheetProps) {
@@ -51,14 +53,17 @@ export default function MapStoreBottomSheet({
         </div>
 
         <div className="mt-[1.3rem] flex flex-col gap-[0.8rem]">
-          <div className="flex items-center gap-[0.8rem]">
+          <div className="flex items-start gap-[0.8rem]">
             <Icon
               name="LocationIcon"
               width={20}
               height={20}
               ariaHidden={false}
             />
-            <span className="body2-r text-gray-700">{address}</span>
+            <div>
+              <p className="body2-r text-gray-700">{roadAddress}</p>
+              <p className="body2-r text-gray-500">{jibunAddress}</p>
+            </div>
           </div>
 
           <div className="flex items-center gap-[0.8rem]">
@@ -68,7 +73,9 @@ export default function MapStoreBottomSheet({
               height={20}
               ariaHidden={false}
             />
-            <span className="body2-r text-gray-700">{email}</span>
+            <span className="body2-r text-gray-700">
+              {email ?? "이메일 정보 없음"}
+            </span>
           </div>
 
           <div className="flex items-center gap-[0.8rem]">
@@ -78,7 +85,9 @@ export default function MapStoreBottomSheet({
               height={20}
               ariaHidden={false}
             />
-            <span className="body2-r text-gray-700">{businessHours}</span>
+            <span className="body2-r text-gray-700">
+              {businessHours ? `영업중 ${businessHours}` : "영업시간 정보 없음"}
+            </span>
           </div>
         </div>
 
