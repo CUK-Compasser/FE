@@ -3,11 +3,13 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Icon } from "@compasser/design-system";
+import type { StoreRespDTO } from "@compasser/api";
+import { useStoreDetail } from "@/shared/queries/query/store/useStoreDetail";
 import StoreMenuCard from "./StoreMenuCard";
-import type { DayKey, StoreDetailItem } from "../_types/store-detail";
+import type { DayKey } from "../_types/store-detail";
 
 interface StoreDetailContentProps {
-  store: StoreDetailItem;
+  storeId: number;
 }
 
 const DAY_LABEL: Record<DayKey, string> = {
@@ -42,28 +44,74 @@ const getTodayDayKeyInKorea = (): DayKey => {
 };
 
 export default function StoreDetailContent({
-  store,
+  storeId,
 }: StoreDetailContentProps) {
   const router = useRouter();
   const [isHoursOpen, setIsHoursOpen] = useState(false);
 
-  const todayKey = useMemo(() => getTodayDayKeyInKorea(), []);
-  const todayHours = store.businessHours[todayKey];
+  const { data: store, isLoading, isError } = useStoreDetail(storeId);
 
-  const currentBusinessText = `영업중 ${todayHours.open} ~ ${todayHours.close}`;
+  const todayKey = useMemo(() => getTodayDayKeyInKorea(), []);
+  const businessHours = useMemo(
+    () => normalizeBusinessHours(store?.businessHours),
+    [store?.businessHours]
+  );
+
+  const todayHoursText = businessHours[todayKey];
+  const currentBusinessText = todayHoursText
+    ? `영업중 ${todayHoursText}`
+    : "영업시간 정보 없음";
+
+  const thumbnailImageUrl = getThumbnailImageUrl(store);
+  const roadAddress = store?.roadAddress ?? "";
+  const lotAddress = readJibunAddress(store);
+  const email = store?.storeEmail ?? "";
+  const menus = store?.randomBoxes ?? [];
 
   const handleMenuClick = (menuId: number) => {
-    router.push(`/main/store/${store.id}/purchase?menuId=${menuId}`);
+    router.push(`/main/store/${storeId}/purchase?menuId=${menuId}`);
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen w-full bg-background">
+        <main className="relative z-10 block min-h-screen w-full bg-inverse pt-[2rem] pb-[10rem]">
+          <div className="px-[1.6rem]">
+            <p className="body2-r text-gray-700">로딩중...</p>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (isError || !store) {
+    return (
+      <div className="min-h-screen w-full bg-background">
+        <main className="relative z-10 block min-h-screen w-full bg-inverse pt-[2rem] pb-[10rem]">
+          <div className="px-[1.6rem]">
+            <p className="body2-r text-gray-700">
+              가게 정보를 불러오지 못했습니다.
+            </p>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full bg-background">
       <div className="h-[20rem] w-full overflow-hidden">
-        <img
-          src={store.thumbnailImageUrl}
-          alt={store.storeName}
-          className="block h-full w-full object-cover"
-        />
+        {thumbnailImageUrl ? (
+          <img
+            src={thumbnailImageUrl}
+            alt={store.storeName}
+            className="block h-full w-full object-cover"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-background">
+            <Icon name="Gift" width={80} height={80} ariaHidden={false} />
+          </div>
+        )}
       </div>
 
       <main className="relative z-10 mt-[-1.6rem] block min-h-[calc(100vh-18.4rem)] w-full rounded-t-[20px] bg-inverse pt-[2rem] pb-[10rem]">
@@ -82,8 +130,8 @@ export default function StoreDetailContent({
               </div>
 
               <div className="ml-[0.2rem]">
-                <p className="body2-r text-gray-700">{store.roadAddress}</p>
-                <p className="body2-r text-gray-700">{store.lotAddress}</p>
+                <p className="body2-r text-gray-700">{roadAddress}</p>
+                <p className="body2-r text-gray-700">{lotAddress}</p>
               </div>
             </div>
 
@@ -98,7 +146,7 @@ export default function StoreDetailContent({
               </div>
 
               <div className="ml-[0.2rem]">
-                <p className="body2-r text-gray-700">{store.email}</p>
+                <p className="body2-r text-gray-700">{email}</p>
               </div>
             </div>
 
@@ -135,7 +183,7 @@ export default function StoreDetailContent({
               {isHoursOpen && (
                 <div className="ml-[2.2rem] mt-[0.4rem] flex flex-col gap-[0.4rem]">
                   {DAY_ORDER.map((day) => {
-                    const hour = store.businessHours[day];
+                    const hour = businessHours[day];
                     const isToday = day === todayKey;
 
                     return (
@@ -156,7 +204,7 @@ export default function StoreDetailContent({
                               : "body2-r text-gray-700"
                           }
                         >
-                          {hour.open} ~ {hour.close}
+                          {hour ?? "정보 없음"}
                         </span>
                       </div>
                     );
@@ -173,11 +221,19 @@ export default function StoreDetailContent({
             </div>
 
             <div className="mt-[1.6rem] flex flex-col gap-[1.2rem]">
-              {store.menus.map((menu) => (
+              {menus.map((menu) => (
                 <StoreMenuCard
-                  key={menu.id}
-                  item={menu}
-                  onClick={() => handleMenuClick(menu.id)}
+                  key={menu.boxId}
+                  item={{
+                    id: menu.boxId,
+                    name: menu.boxName,
+                    stock: menu.stock,
+                    price: menu.price,
+                    buyLimit: menu.buyLimit,
+                    content: menu.content,
+                    saleStatus: menu.saleStatus,
+                  }}
+                  onClick={() => handleMenuClick(menu.boxId)}
                 />
               ))}
             </div>
@@ -186,4 +242,50 @@ export default function StoreDetailContent({
       </main>
     </div>
   );
+}
+
+function getThumbnailImageUrl(store?: StoreRespDTO) {
+  if (!store?.images || store.images.length === 0) {
+    return "";
+  }
+
+  return store.images[0]?.imageUrl ?? "";
+}
+
+function readJibunAddress(store?: StoreRespDTO) {
+  if (!store) {
+    return "";
+  }
+
+  return (store as StoreRespDTO & { jibunAddres?: string }).jibunAddress
+    ?? (store as StoreRespDTO & { jibunAddres?: string }).jibunAddres
+    ?? "";
+}
+
+function normalizeBusinessHours(raw?: unknown): Record<DayKey, string> {
+  const emptyValue: Record<DayKey, string> = {
+    mon: "",
+    tue: "",
+    wed: "",
+    thu: "",
+    fri: "",
+    sat: "",
+    sun: "",
+  };
+
+  if (!raw || typeof raw !== "object") {
+    return emptyValue;
+  }
+
+  const source = raw as Record<string, string>;
+
+  return {
+    mon: source.mon ?? "",
+    tue: source.tue ?? "",
+    wed: source.wed ?? "",
+    thu: source.thu ?? "",
+    fri: source.fri ?? "",
+    sat: source.sat ?? "",
+    sun: source.sun ?? "",
+  };
 }
