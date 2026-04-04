@@ -26,6 +26,7 @@ export const iconNames = [
   "Notice",
   "Order",
   "OwnerSelect",
+  "Pin",
   "Plus",
   "ProfileCharacter",
   "RadioActive",

@@ -37,7 +37,7 @@ export const BottomSheet = ({
     <div
       className={cn(
         "fixed inset-0 z-9999 flex items-end justify-center",
-        overlay ? "bg-black/50" : "pointer-events-none bg-transparent",
+        overlay ? "bg-default/50" : "pointer-events-none bg-transparent",
         overlayClassName
       )}
       onClick={overlay ? handleOverlayClick : undefined}
