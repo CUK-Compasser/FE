@@ -225,8 +225,9 @@ export default function StoreDetailContent({
                 <StoreMenuCard
                   key={menu.boxId}
                   item={{
-                    id: menu.boxId,
-                    name: menu.boxName,
+                    boxId: menu.boxId,
+                    storeId: store.storeId,
+                    boxName: menu.boxName,
                     stock: menu.stock,
                     price: menu.price,
                     buyLimit: menu.buyLimit,

@@ -1,11 +1,12 @@
 "use client";
 
 import { Card, Icon } from "@compasser/design-system";
-import type { StoreDetailItem, StoreMenuItem } from "../../../_types/store-detail";
+import type { StoreRespDTO, StoreRandomBoxRespDTO } from "@compasser/api";
 
 interface PurchaseOrderCardProps {
-  store: StoreDetailItem;
-  menu: StoreMenuItem;
+  store: StoreRespDTO;
+  menu: StoreRandomBoxRespDTO;
+  pickupTimeText?: string;
   count: number;
   totalPrice: number;
   onDecrease: () => void;
@@ -17,6 +18,7 @@ const formatPrice = (price: number) => `${price.toLocaleString()}원`;
 export default function PurchaseOrderCard({
   store,
   menu,
+  pickupTimeText,
   count,
   totalPrice,
   onDecrease,
@@ -46,11 +48,13 @@ export default function PurchaseOrderCard({
           </div>
 
           <div className="ml-[0.6rem] flex min-w-0 flex-1 flex-col">
-            <p className="body1-m text-default">{menu.name}</p>
+            <p className="body1-m text-default">{menu.boxName}</p>
 
-            <p className="mt-[0.2rem] body2-r text-gray-600">
-              픽업시간: {menu.pickupStartTime} ~ {menu.pickupEndTime}
-            </p>
+            {pickupTimeText ? (
+              <p className="mt-[0.2rem] body2-r text-gray-600">
+                픽업시간: {pickupTimeText}
+              </p>
+            ) : null}
 
             <div className="mt-auto flex items-end justify-between">
               <div className="flex items-center">
@@ -75,7 +79,7 @@ export default function PurchaseOrderCard({
                   onClick={onIncrease}
                   className="ml-[0.6rem] flex h-[2.8rem] w-[2.8rem] items-center justify-center"
                   aria-label="수량 증가"
-                  disabled={count >= menu.remainingCount}
+                  disabled={count >= menu.stock}
                 >
                   <Icon
                     name="Plus"

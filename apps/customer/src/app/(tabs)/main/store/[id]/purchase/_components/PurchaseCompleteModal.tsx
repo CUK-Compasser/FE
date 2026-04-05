@@ -2,12 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { Button, Header, Icon } from "@compasser/design-system";
-import type { StoreDetailItem, StoreMenuItem } from "../../../_types/store-detail";
+import type { StoreRespDTO, StoreRandomBoxRespDTO } from "@compasser/api";
 
 interface PurchaseCompleteModalProps {
   isOpen: boolean;
-  store: StoreDetailItem;
-  menu: StoreMenuItem;
+  store: StoreRespDTO;
+  menu: StoreRandomBoxRespDTO;
+  pickupTimeText: string;
   onClose?: () => void;
 }
 
@@ -17,6 +18,7 @@ export default function PurchaseCompleteModal({
   isOpen,
   store,
   menu,
+  pickupTimeText,
 }: PurchaseCompleteModalProps) {
   const router = useRouter();
 
@@ -74,10 +76,10 @@ export default function PurchaseCompleteModal({
                   </div>
 
                   <div className="ml-[0.6rem] flex min-w-0 flex-1 flex-col">
-                    <p className="body1-m text-default">{menu.name}</p>
+                    <p className="body1-m text-default">{menu.boxName}</p>
 
                     <p className="mt-[0.2rem] body2-r text-gray-600">
-                      픽업시간: {menu.pickupStartTime} ~ {menu.pickupEndTime}
+                      픽업시간: {pickupTimeText}
                     </p>
 
                     <p className="mt-[0.2rem] body2-m text-secondary">

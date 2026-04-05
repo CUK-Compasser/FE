@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import PurchaseContent from "./_components/PurchaseContent";
-import { MOCK_MAIN_STORE_DETAIL_MAP } from "../../_constants/mockStoreDetail";
+import { storeModule } from "@/shared/api/api";
 
 interface PurchasePageProps {
   params: Promise<{
@@ -21,13 +21,20 @@ export default async function PurchasePage({
   const storeId = Number(id);
   const selectedMenuId = Number(menuId);
 
-  const store = MOCK_MAIN_STORE_DETAIL_MAP[storeId];
-
-  if (!store || !selectedMenuId) {
+  if (!Number.isFinite(storeId) || !Number.isFinite(selectedMenuId)) {
     notFound();
   }
 
-  const menu = store.menus.find((item) => item.id === selectedMenuId);
+  const response = await storeModule.requests.getStoreDetail(storeId);
+  const store = response.data;
+
+  if (!store) {
+    notFound();
+  }
+
+  const menu = store.randomBoxes.find(
+    (item) => item.boxId === selectedMenuId,
+  );
 
   if (!menu) {
     notFound();
