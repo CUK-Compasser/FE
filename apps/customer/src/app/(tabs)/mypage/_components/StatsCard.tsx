@@ -2,14 +2,31 @@
 
 import { useRouter } from "next/navigation";
 import { Card, Icon } from "@compasser/design-system";
-import { stats } from "../_constants/stats";
 
-export const StatsCard = () => {
+interface StatsCardProps {
+  totalStampCount?: number;
+  totalUnboxingCount?: number;
+  totalCouponCount?: number;
+  isLoading?: boolean;
+}
+
+export const StatsCard = ({
+  totalStampCount = 0,
+  totalUnboxingCount = 0,
+  totalCouponCount = 0,
+  isLoading = false,
+}: StatsCardProps) => {
   const router = useRouter();
 
   const handleMoveDetailPage = () => {
     router.push("/mypage/detail");
   };
+
+  const stats = [
+    { label: "총 스탬프", value: totalStampCount },
+    { label: "총 언박싱", value: totalUnboxingCount },
+    { label: "총 쿠폰", value: totalCouponCount },
+  ];
 
   return (
     <Card variant="gray-200-elevated">
@@ -43,7 +60,7 @@ export const StatsCard = () => {
                   {item.label}
                 </p>
                 <p className="head3-m mt-[0.2rem] text-primary">
-                  {item.value}
+                  {isLoading ? "-" : item.value}
                 </p>
               </div>
             ))}
