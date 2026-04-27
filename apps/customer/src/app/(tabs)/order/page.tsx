@@ -7,27 +7,22 @@ import { useOrderListQuery } from "@/shared/queries/query/order/useOrderListQuer
 import type { OrderCardItem, OrderTabKey } from "./_types/order";
 
 export default function OrderPage() {
-  const [activeTab, setActiveTab] = useState<OrderTabKey>("in-progress");
+  const [activeTab, setActiveTab] = useState<OrderTabKey>("ONGOING");
 
-  const { data: orderList = [], isLoading, isError } = useOrderListQuery();
+  const { data: orderList = [], isLoading, isError } =
+    useOrderListQuery(activeTab);
 
-  const allOrders = useMemo<OrderCardItem[]>(
+  const orders = useMemo<OrderCardItem[]>(
     () =>
       orderList.map((order) => ({
         ...order,
         id: order.reservationId,
-
-        // TODO: 서버에서 진행 중 / 완료 상태값 내려오면 실제 값으로 매핑
-        // 예: status: order.orderStatus === "DONE" ? "done" : "in-progress"
-        status: "in-progress",
       })),
     [orderList],
   );
 
-  const orders = useMemo(
-    () => allOrders.filter((order) => order.status === activeTab),
-    [allOrders, activeTab],
-  );
+  const isOrderTabKey = (key: string): key is OrderTabKey =>
+    key === "ONGOING" || key === "COMPLETED";
 
   return (
     <main className="flex flex-col bg-white">
@@ -35,11 +30,15 @@ export default function OrderPage() {
 
       <TopTabBar
         items={[
-          { key: "in-progress", label: "진행 중" },
-          { key: "done", label: "완료" },
+          { key: "ONGOING", label: "진행 중" },
+          { key: "COMPLETED", label: "완료" },
         ]}
         activeKey={activeTab}
-        onTabChange={(key) => setActiveTab(key as OrderTabKey)}
+        onTabChange={(key) => {
+          if (isOrderTabKey(key)) {
+            setActiveTab(key);
+          }
+        }}
       />
 
       <section className="flex-1 overflow-y-auto px-[1.6rem] pt-[3.2rem] pb-[9.6rem]">

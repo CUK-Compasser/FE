@@ -1,6 +1,8 @@
 import type { ApiResponse } from "../core/types";
 import type { BankType } from "./common";
 
+export type OrderListTab = "ONGOING" | "COMPLETED";
+
 export interface CreateOrderDTO {
   randomBoxId: number;
   quantity: number;
