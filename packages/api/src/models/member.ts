@@ -17,8 +17,8 @@ export interface MyPageRespDTO {
 }
 
 export interface QRDTO {
-  memberId?: number;
-  token?: string;
+  token: string;
+  memberId: number;
 }
 
 export interface GetMemberRewardDTO {
@@ -26,9 +26,11 @@ export interface GetMemberRewardDTO {
   storeId: number;
   memberId: number;
   nickname: string;
+  email: string;
+  randomBoxName: string;
+  totalPrice: number;
   stamp: number;
   coupon: number;
-  createdAt: string;
 }
 
 export interface WritingRewardDTO {
