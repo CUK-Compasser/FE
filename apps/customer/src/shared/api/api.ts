@@ -7,6 +7,7 @@ import {
   type TokenPair,
   type TokenStore,
   createMemberModule,
+  createOrderModule,
 } from "@compasser/api";
 
 const tokenStore: TokenStore = {
@@ -41,3 +42,4 @@ export const compasserApi = createCompasserApi({
 export const authModule = createAuthModule(compasserApi);
 export const memberModule = createMemberModule(compasserApi);
 export const storeModule = createStoreModule(compasserApi);
+export const orderModule = createOrderModule(compasserApi);
