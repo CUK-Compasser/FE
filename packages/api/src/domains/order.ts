@@ -7,13 +7,14 @@ import type {
   CreateOrderDTO,
   CreateOrderResponse,
   OrderListResponse,
+  OrderListTab,
   OrderStatusResponse,
 } from "../models/order";
 
 export const createOrderModule = (api: CompasserApi) => {
   const keys = {
     all: ["orders"] as const,
-    list: () => [...keys.all, "list"] as const,
+    list: (tab: OrderListTab) => [...keys.all, "list", tab] as const,
     status: (orderId: number) => [...keys.all, orderId, "status"] as const,
   };
 
@@ -26,15 +27,14 @@ export const createOrderModule = (api: CompasserApi) => {
       return data;
     },
 
-    getOrders: async () => {
+    getOrders: async (tab: OrderListTab) => {
       const { data } = await api.privateClient.get<OrderListResponse>(
         "/orders",
-        // TODO: 서버에서 진행 중 / 완료 필터 파라미터 지원 시 사용
-        // {
-        //   params: {
-        //     status,
-        //   },
-        // },
+        {
+          params: {
+            tab,
+          },
+        },
       );
       return data;
     },
@@ -55,11 +55,11 @@ export const createOrderModule = (api: CompasserApi) => {
   };
 
   const queries = {
-    list: () =>
+    list: (tab: OrderListTab) =>
       queryOptions({
-        queryKey: keys.list(),
+        queryKey: keys.list(tab),
         queryFn: async () => {
-          const response = await requests.getOrders();
+          const response = await requests.getOrders(tab);
           return response.data.orders;
         },
       }),
@@ -108,8 +108,8 @@ export const createOrderModule = (api: CompasserApi) => {
     all: async (queryClient: QueryClient) =>
       invalidatePrefix(queryClient, keys.all),
 
-    list: async (queryClient: QueryClient) =>
-      invalidatePrefix(queryClient, keys.list()),
+    list: async (queryClient: QueryClient, tab: OrderListTab) =>
+      invalidatePrefix(queryClient, keys.list(tab)),
 
     status: async (queryClient: QueryClient, orderId: number) =>
       invalidatePrefix(queryClient, keys.status(orderId)),
