@@ -57,6 +57,26 @@ export interface OrderStatusDTO {
   updatedAt: string;
 }
 
+/**
+ * GET /orders
+ * 사용자 주문 리스트 조회
+ */
+export interface OrderListItemDTO {
+  reservationId: number;
+  storeId: number;
+  storeName: string;
+  randomBoxId: number;
+  randomBoxName: string;
+  quantity: number;
+  totalPrice: number;
+  pickupTimeText: string;
+}
+
+export interface OrderListDTO {
+  orders: OrderListItemDTO[];
+}
+
 export type CreateOrderResponse = ApiResponse<CreateOrderResultDTO>;
 export type CancelOrderResponse = ApiResponse<CancelOrderResultDTO>;
 export type OrderStatusResponse = ApiResponse<OrderStatusDTO>;
+export type OrderListResponse = ApiResponse<OrderListDTO>;
