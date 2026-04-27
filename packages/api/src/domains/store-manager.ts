@@ -22,13 +22,18 @@ export const createStoreManagerModule = (api: CompasserApi) => {
       return data;
     },
 
-    checkingQr: async (body: QRDTO) => {
-      const { data } = await api.privateClient.get<GetMemberRewardResponse>(
+    checkingQr: async ({ token, memberId }: QRDTO) => {
+      const { data } = await api.privateClient.post<GetMemberRewardResponse>(
         "/store_manager/qr-check",
+        null,
         {
-          data: body,
+          params: {
+            token,
+            memberId,
+          },
         },
       );
+
       return data;
     },
   };
