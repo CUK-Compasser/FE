@@ -1,10 +1,10 @@
 "use client";
 
 import { Card } from "@compasser/design-system";
-import type { StampDetail } from "../_types/stampDetail";
+import type { RewardListDTO } from "@compasser/api";
 
 interface StampDetailCardProps {
-  item: StampDetail;
+  item: RewardListDTO;
 }
 
 export const StampDetailCard = ({ item }: StampDetailCardProps) => {
@@ -31,20 +31,16 @@ export const StampDetailCard = ({ item }: StampDetailCardProps) => {
 
             <div className="flex flex-col items-start">
               <div className="flex items-center py-[0.35rem]">
-                <p className="head3-m text-primary">{item.usedCouponCount}</p>
+                <p className="head3-m text-primary">{item.useCouponCnt}</p>
               </div>
 
               <div className="flex items-center border-y border-gray-100 py-[0.35rem]">
-                <p className="head3-m text-primary">
-                  {item.remainingCouponCount}
-                </p>
+                <p className="head3-m text-primary">{item.coupon}</p>
               </div>
 
               <div className="flex items-center py-[0.35rem]">
-                <span className="head3-m text-primary">{item.stampCount}</span>
-                <span className="body2-m text-gray-700">
-                  /{item.maxStampCount}
-                </span>
+                <span className="head3-m text-primary">{item.stamp}</span>
+                <span className="body2-m text-gray-700">/10</span>
               </div>
             </div>
           </div>

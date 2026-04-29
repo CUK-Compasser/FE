@@ -9,8 +9,10 @@ interface UseRewardQrQueryParams {
 
 export const useRewardQrQuery = ({ enabled }: UseRewardQrQueryParams) => {
   return useQuery({
-    ...memberModule.queries.qrTest(),
+    ...memberModule.queries.qr(),
     enabled,
     refetchInterval: enabled ? 60000 : false,
+    refetchOnWindowFocus: false,
+    staleTime: 0,
   });
 };
