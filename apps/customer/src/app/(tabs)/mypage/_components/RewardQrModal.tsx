@@ -22,21 +22,22 @@ export const RewardQrModal = ({ open, onClose }: RewardQrModalProps) => {
   }, [data]);
 
   useEffect(() => {
+    if (!qrImageUrl) return;
+
     return () => {
-      if (qrImageUrl) {
-        URL.revokeObjectURL(qrImageUrl);
-      }
+      URL.revokeObjectURL(qrImageUrl);
     };
   }, [qrImageUrl]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || !dataUpdatedAt) return;
 
     setSecondsLeft(60);
 
     const interval = window.setInterval(() => {
       const elapsed = Math.floor((Date.now() - dataUpdatedAt) / 1000);
       const remain = Math.max(60 - elapsed, 0);
+
       setSecondsLeft(remain);
     }, 1000);
 

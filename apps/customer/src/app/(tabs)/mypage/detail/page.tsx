@@ -2,11 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { Header } from "@compasser/design-system";
-import { stampDetails } from "./constants/stampDetails";
 import { StampDetailCard } from "./_components/StampDetailCard";
+import { useRewardListQuery } from "@/shared/queries/query/member/useRewardListQuery";
 
 export default function StampDetailPage() {
   const router = useRouter();
+  const { data: rewards = [], isLoading, isError } = useRewardListQuery();
 
   const handleBack = () => {
     router.back();
@@ -21,11 +22,21 @@ export default function StampDetailPage() {
       />
 
       <section className="flex-1 px-[1.6rem] pt-[2.4rem]">
-        <div className="flex flex-col gap-[1.2rem]">
-          {stampDetails.map((item) => (
-            <StampDetailCard key={item.id} item={item} />
-          ))}
-        </div>
+        {isLoading ? (
+          <p className="body1-m text-gray-600">적립 정보를 불러오는 중입니다.</p>
+        ) : isError ? (
+          <p className="body1-m text-gray-600">
+            적립 정보를 불러오지 못했습니다.
+          </p>
+        ) : rewards.length === 0 ? (
+          <p className="body1-m text-gray-600">적립 내역이 없습니다.</p>
+        ) : (
+          <div className="flex flex-col gap-[1.2rem]">
+            {rewards.map((item) => (
+              <StampDetailCard key={item.storeName} item={item} />
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );
