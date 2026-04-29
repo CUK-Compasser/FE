@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Icon } from "@compasser/design-system";
-import type { GetMemberRewardDTO } from "@compasser/api";
+import type { QRCheckResponseDTO } from "@compasser/api";
 import QRStampModal from "./QRStampModal";
 import QRRewardConfirmModal from "./QRRewardConfirmModal";
 import { useWritingRewardMutation } from "@/shared/queries/mutation/store-manager/useQrMutation";
@@ -41,7 +41,7 @@ export default function CafeIntro({ cafeName }: CafeIntroProps) {
 
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [rewardInfo, setRewardInfo] = useState<GetMemberRewardDTO | null>(null);
+  const [rewardInfo, setRewardInfo] = useState<QRCheckResponseDTO | null>(null);
 
   const writingRewardMutation = useWritingRewardMutation();
 
@@ -53,7 +53,7 @@ export default function CafeIntro({ cafeName }: CafeIntroProps) {
     setIsQrModalOpen(false);
   };
 
-  const handleQrSuccess = (data: GetMemberRewardDTO) => {
+  const handleQrSuccess = (data: QRCheckResponseDTO) => {
     setRewardInfo(data);
     setIsQrModalOpen(false);
     setIsConfirmModalOpen(true);

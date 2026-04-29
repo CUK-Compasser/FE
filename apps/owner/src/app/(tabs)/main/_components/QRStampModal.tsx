@@ -2,13 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "@compasser/design-system";
-import type { GetMemberRewardDTO } from "@compasser/api";
+import type { QRCheckResponseDTO } from "@compasser/api";
 import { useCheckQrMutation } from "@/shared/queries/mutation/store-manager/useQrMutation";
 
 interface QRStampModalProps {
   open: boolean;
   onClose: () => void;
-  onSuccess: (data: GetMemberRewardDTO) => void;
+  onSuccess: (data: QRCheckResponseDTO) => void;
 }
 
 interface CornerGuideProps {
