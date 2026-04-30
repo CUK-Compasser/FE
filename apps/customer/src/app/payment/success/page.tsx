@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import type { StoreRespDTO, StoreRandomBoxRespDTO } from "@compasser/api";
+import type { StoreRandomBoxRespDTO, StoreRespDTO } from "@compasser/api";
 import { useApproveKakaoPayMutation } from "@/shared/queries/mutation/payment/useApproveKakaoPayMutation";
 import PurchaseCompleteModal from "@/app/(tabs)/main/store/[id]/purchase/_components/PurchaseCompleteModal";
 
@@ -13,7 +13,7 @@ interface PendingPayment {
   pickupTimeText: string;
 }
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const approveKakaoPayMutation = useApproveKakaoPayMutation();
   const [pendingPayment, setPendingPayment] = useState<PendingPayment | null>(
@@ -49,7 +49,7 @@ export default function PaymentSuccessPage() {
         },
       },
     );
-  }, [reservationId, pgToken]);
+  }, [reservationId, pgToken, approveKakaoPayMutation]);
 
   if (approveKakaoPayMutation.isPending) {
     return <div>결제 승인 처리 중...</div>;
@@ -70,5 +70,13 @@ export default function PaymentSuccessPage() {
       menu={pendingPayment.menu}
       pickupTimeText={pendingPayment.pickupTimeText}
     />
+  );
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={<div>결제 승인 처리 중...</div>}>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 }

@@ -18,6 +18,7 @@ export interface StoreImageDTO {
   id: number;
   imageUrl: string;
   createdAt?: string;
+  store?: unknown;
 }
 
 export interface StoreRandomBoxRespDTO {
@@ -29,6 +30,7 @@ export interface StoreRandomBoxRespDTO {
   buyLimit: number;
   content: string;
   saleStatus: string;
+  pickupTimeInfo?: string;
 }
 
 export interface StoreRespDTO {
@@ -66,7 +68,6 @@ export interface SimpleStoreInfoDTO {
   storeName: string;
   roadAddress: string;
   jibunAddress: string;
-  storeEmail: string;
   businessHours?: JsonValue;
 }
 

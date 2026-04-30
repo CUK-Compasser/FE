@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCancelKakaoPayMutation } from "@/shared/queries/mutation/payment/useCancelKakaoPayMutation";
 
-export default function PaymentCancelPage() {
+function PaymentCancelContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const cancelKakaoPayMutation = useCancelKakaoPayMutation();
@@ -20,7 +20,15 @@ export default function PaymentCancelPage() {
         router.replace("/main");
       },
     });
-  }, [searchParams]);
+  }, [searchParams, cancelKakaoPayMutation, router]);
 
   return <div>결제가 취소되었습니다.</div>;
+}
+
+export default function PaymentCancelPage() {
+  return (
+    <Suspense fallback={<div>결제 취소 처리 중...</div>}>
+      <PaymentCancelContent />
+    </Suspense>
+  );
 }

@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Header } from "@compasser/design-system";
 import type {
-  JsonValue,
   StoreRandomBoxRespDTO,
   StoreRespDTO,
 } from "@compasser/api";
@@ -14,12 +13,17 @@ import PurchaseGuideModal from "./PurchaseGuideModal";
 import PurchaseNoticeCard from "./PurchaseNoticeCard";
 import PurchaseOrderCard from "./PurchaseOrderCard";
 
-type DayKey = "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
-type BusinessHoursValue = Partial<Record<DayKey, string>>;
-
 interface PurchaseContentProps {
   store: StoreRespDTO;
   menu: StoreRandomBoxRespDTO;
+}
+
+interface PickupTimeValue {
+  timezone?: string;
+  pickupTime?: {
+    start?: string;
+    end?: string;
+  };
 }
 
 const NOTICE_LIST = [
@@ -28,55 +32,25 @@ const NOTICE_LIST = [
   "픽업 시간에 맞춰 상품을 수령해주세요.",
 ];
 
-const DAY_KEYS: DayKey[] = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
-const DAY_LABELS: Record<DayKey, string> = {
-  mon: "월",
-  tue: "화",
-  wed: "수",
-  thu: "목",
-  fri: "금",
-  sat: "토",
-  sun: "일",
-};
-
-function parseBusinessHours(value?: JsonValue): BusinessHoursValue | undefined {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    return undefined;
+function getPickupTimeText(pickupTime?: string): string {
+  if (!pickupTime) {
+    return "픽업시간 정보 없음";
   }
 
-  const record = value as Record<string, unknown>;
-  const result: BusinessHoursValue = {};
+  try {
+    const parsed = JSON.parse(pickupTime) as PickupTimeValue;
 
-  const keys: DayKey[] = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+    const start = parsed.pickupTime?.start;
+    const end = parsed.pickupTime?.end;
 
-  for (const key of keys) {
-    const item = record[key];
-
-    if (typeof item === "string") {
-      result[key] = item;
+    if (!start || !end) {
+      return "픽업시간 정보 없음";
     }
+
+    return `${start} ~ ${end}`;
+  } catch {
+    return "픽업시간 정보 없음";
   }
-
-  return result;
-}
-
-function getTodayPickupTimeText(businessHours?: BusinessHoursValue): string {
-  if (!businessHours) {
-    return "운영시간 정보 없음";
-  }
-
-  const today = DAY_KEYS[new Date().getDay()];
-  const todayValue = businessHours[today];
-
-  if (!todayValue) {
-    return "운영시간 정보 없음";
-  }
-
-  if (todayValue.toLowerCase() === "closed") {
-    return `${DAY_LABELS[today]} 휴무`;
-  }
-
-  return `${DAY_LABELS[today]} ${todayValue}`;
 }
 
 export default function PurchaseContent({
@@ -96,9 +70,8 @@ export default function PurchaseContent({
   const totalPrice = useMemo(() => menu.price * count, [menu.price, count]);
 
   const pickupTimeText = useMemo(() => {
-    const businessHours = parseBusinessHours(store.businessHours);
-    return getTodayPickupTimeText(businessHours);
-  }, [store.businessHours]);
+    return getPickupTimeText(menu.pickupTimeInfo);
+  }, [menu.pickupTimeInfo]);
 
   const handleDecrease = () => {
     setCount((prev) => Math.max(prev - 1, 0));
