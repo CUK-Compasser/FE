@@ -8,6 +8,7 @@ import type {
   ReservationListResponse,
   ReservationReqDTO,
   ReservationResponse,
+  SettlementPreviewDTO,
 } from "../models/owner";
 
 export interface ReservationDecisionParams {
@@ -22,6 +23,8 @@ export const createOwnerModule = (api: CompasserApi) => {
     reservations: () => [...keys.all, "reservations"] as const,
     pendingReservations: () => [...keys.reservations(), "pending"] as const,
     processedReservations: () => [...keys.reservations(), "processed"] as const,
+    settlements: () => [...keys.all, "settlements"] as const,
+    settlementPreview: () => [...keys.settlements(), "preview"] as const,
   };
 
   const requests = {
@@ -71,6 +74,13 @@ export const createOwnerModule = (api: CompasserApi) => {
       );
       return data;
     },
+
+    getSettlementPreview: async (): Promise<SettlementPreviewDTO> => {
+      const { data } = await api.privateClient.get(
+        "/owners/my-store/settlements/preview",
+      );
+      return data;
+    },
   };
 
   const queries = {
@@ -84,6 +94,12 @@ export const createOwnerModule = (api: CompasserApi) => {
       queryOptions({
         queryKey: keys.processedReservations(),
         queryFn: async () => (await requests.getProcessedReservations()).data,
+      }),
+
+    settlementPreview: () =>
+      queryOptions({
+        queryKey: keys.settlementPreview(),
+        queryFn: async () => (await requests.getSettlementPreview()),
       }),
   };
 
