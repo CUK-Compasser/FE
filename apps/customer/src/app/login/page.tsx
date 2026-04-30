@@ -67,10 +67,6 @@ export default function LoginPage() {
     );
   };
 
-  const handleKakaoLogin = () => {
-    console.log("카카오 로그인");
-  };
-
   return (
     <main className="flex min-h-screen w-full items-center justify-center px-[1.6rem]">
       <section className="w-full">
@@ -84,7 +80,7 @@ export default function LoginPage() {
           />
 
           <div className="mt-[1.2rem] w-full">
-            <KakaoLoginButton onClick={handleKakaoLogin} />
+            <KakaoLoginButton />
           </div>
 
           <SignupLinkButton onClick={handleMoveRoleSelect} />
