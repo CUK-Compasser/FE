@@ -2,11 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "@compasser/design-system";
+import type { QRCheckResponseDTO } from "@compasser/api";
+import { useCheckQrMutation } from "@/shared/queries/mutation/store-manager/useQrMutation";
 
 interface QRStampModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit?: () => void;
+  onSuccess: (data: QRCheckResponseDTO) => void;
 }
 
 interface CornerGuideProps {
@@ -14,23 +16,98 @@ interface CornerGuideProps {
   position: "top-left" | "top-right" | "bottom-left" | "bottom-right";
 }
 
+type DetectedCode = {
+  rawValue?: string;
+};
+
+type BarcodeDetectorInstance = {
+  detect: (source: ImageBitmapSource) => Promise<DetectedCode[]>;
+};
+
+type BarcodeDetectorConstructor = new (options?: {
+  formats?: string[];
+}) => BarcodeDetectorInstance;
+
 const SCAN_BOX_SIZE = 260;
 
 export default function QRStampModal({
   open,
   onClose,
-  onSubmit,
+  onSuccess,
 }: QRStampModalProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const frameRef = useRef<number | null>(null);
+  const isProcessingRef = useRef(false);
+
   const [cameraError, setCameraError] = useState("");
+
+  const checkQrMutation = useCheckQrMutation();
+
+  const stopCamera = () => {
+    if (frameRef.current) {
+      cancelAnimationFrame(frameRef.current);
+      frameRef.current = null;
+    }
+
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+  };
+
+  const parseQrValue = (rawValue: string) => {
+    try {
+      const url = new URL(rawValue);
+      const token = url.searchParams.get("token");
+      const memberId = url.searchParams.get("memberId");
+
+      if (!token || !memberId) return null;
+
+      return {
+        token,
+        memberId: Number(memberId),
+      };
+    } catch {
+      return null;
+    }
+  };
+
+  const handleDetectedQr = async (rawValue: string) => {
+    if (isProcessingRef.current) return;
+
+    const parsedQr = parseQrValue(rawValue);
+
+    if (!parsedQr) {
+      setCameraError("올바르지 않은 QR입니다.");
+      return;
+    }
+
+    try {
+      isProcessingRef.current = true;
+
+      const response = await checkQrMutation.mutateAsync({
+        token: parsedQr.token,
+        memberId: parsedQr.memberId,
+      });
+
+      stopCamera();
+      onSuccess(response.data);
+    } catch {
+      setCameraError("QR 확인에 실패했습니다.");
+      isProcessingRef.current = false;
+    }
+  };
 
   useEffect(() => {
     if (!open) return;
 
+    let cancelled = false;
+
     const startCamera = async () => {
       try {
         setCameraError("");
+        isProcessingRef.current = false;
 
         const stream = await navigator.mediaDevices.getUserMedia({
           video: {
@@ -39,12 +116,57 @@ export default function QRStampModal({
           audio: false,
         });
 
+        if (cancelled) return;
+
         streamRef.current = stream;
 
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           await videoRef.current.play();
         }
+
+        const BarcodeDetectorClass = (
+          window as Window & {
+            BarcodeDetector?: BarcodeDetectorConstructor;
+          }
+        ).BarcodeDetector;
+
+        if (!BarcodeDetectorClass) {
+          setCameraError("이 브라우저에서는 QR 스캔이 지원되지 않습니다.");
+          return;
+        }
+
+        const detector = new BarcodeDetectorClass({
+          formats: ["qr_code"],
+        });
+
+        const scan = async () => {
+          if (
+            cancelled ||
+            !videoRef.current ||
+            videoRef.current.readyState < 2 ||
+            isProcessingRef.current
+          ) {
+            frameRef.current = requestAnimationFrame(scan);
+            return;
+          }
+
+          try {
+            const results = await detector.detect(videoRef.current);
+            const qrValue = results[0]?.rawValue?.trim();
+
+            if (qrValue) {
+              await handleDetectedQr(qrValue);
+              return;
+            }
+          } catch {
+            // 프레임 단위 스캔 실패는 무시
+          }
+
+          frameRef.current = requestAnimationFrame(scan);
+        };
+
+        frameRef.current = requestAnimationFrame(scan);
       } catch {
         setCameraError("카메라에 접근할 수 없습니다.");
       }
@@ -53,17 +175,14 @@ export default function QRStampModal({
     startCamera();
 
     return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop());
-        streamRef.current = null;
-      }
+      cancelled = true;
+      stopCamera();
     };
   }, [open]);
 
   useEffect(() => {
-    if (!open && streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
+    if (!open) {
+      stopCamera();
     }
   }, [open]);
 
@@ -97,7 +216,10 @@ export default function QRStampModal({
 
               <button
                 type="button"
-                onClick={onClose}
+                onClick={() => {
+                  stopCamera();
+                  onClose();
+                }}
                 className="absolute right-[1rem] top-[2.6rem] flex h-[2.8rem] w-[2.8rem] items-center justify-center"
                 aria-label="닫기"
               >
@@ -115,13 +237,11 @@ export default function QRStampModal({
               고객 QR을 스캔해주세요.
             </p>
 
-            <button
-              type="button"
-              onClick={onSubmit}
-              className="absolute bottom-[11rem] left-1/2 -translate-x-1/2 rounded-[999px] bg-primary-variant px-[4.8rem] py-[1.2rem] head3-m text-inverse"
-            >
-              적립하기
-            </button>
+            {checkQrMutation.isPending && (
+              <p className="mt-[1rem] body2-r text-primary-variant">
+                QR 확인 중...
+              </p>
+            )}
           </div>
         </div>
       </div>

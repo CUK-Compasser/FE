@@ -9,6 +9,7 @@ import {
   createStoreModule,
   createRandomBoxModule,
   createStoreImageModule,
+  createStoreManagerModule,
 } from "@compasser/api";
 
 const tokenStore: TokenStore = {
@@ -45,3 +46,4 @@ export const ownerModule = createOwnerModule(compasserApi);
 export const storeModule = createStoreModule(compasserApi);
 export const randomBoxModule = createRandomBoxModule(compasserApi);
 export const storeImageModule = createStoreImageModule(compasserApi);
+export const storeManagerModule = createStoreManagerModule(compasserApi);

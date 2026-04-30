@@ -2,33 +2,40 @@ import { type QueryClient } from "@tanstack/react-query";
 import { createMutationWithCache } from "../core/mutation";
 import type { CompasserApi } from "../core/types";
 import type {
-  QRDTO,
-  WritingRewardDTO,
-  WritingRewardResponse,
-  GetMemberRewardResponse,
-} from "../models/member";
+  QRCheckParams,
+  QRCheckResponse,
+  RewardRequestDTO,
+  RewardResponse,
+} from "../models/storeManager";
 
 export const createStoreManagerModule = (api: CompasserApi) => {
   const keys = {
     all: ["store-manager"] as const,
+    reward: () => [...keys.all, "reward"] as const,
+    qrCheck: () => [...keys.all, "qr-check"] as const,
   };
 
   const requests = {
-    writingReward: async (body: WritingRewardDTO) => {
-      const { data } = await api.privateClient.post<WritingRewardResponse>(
+    writingReward: async (body: RewardRequestDTO) => {
+      const { data } = await api.privateClient.post<RewardResponse>(
         "/store_manager/reward",
         body,
       );
       return data;
     },
 
-    checkingQr: async (body: QRDTO) => {
-      const { data } = await api.privateClient.get<GetMemberRewardResponse>(
+    checkingQr: async ({ token, memberId }: QRCheckParams) => {
+      const { data } = await api.privateClient.post<QRCheckResponse>(
         "/store_manager/qr-check",
+        null,
         {
-          data: body,
+          params: {
+            token,
+            memberId,
+          },
         },
       );
+
       return data;
     },
   };
@@ -37,7 +44,7 @@ export const createStoreManagerModule = (api: CompasserApi) => {
     writingReward: (queryClient: QueryClient) =>
       createMutationWithCache({
         queryClient,
-        mutationKey: [...keys.all, "writing-reward"],
+        mutationKey: keys.reward(),
         mutationFn: requests.writingReward,
         getActions: () => [
           {
@@ -54,7 +61,7 @@ export const createStoreManagerModule = (api: CompasserApi) => {
     checkingQr: (queryClient: QueryClient) =>
       createMutationWithCache({
         queryClient,
-        mutationKey: [...keys.all, "checking-qr"],
+        mutationKey: keys.qrCheck(),
         mutationFn: requests.checkingQr,
       }),
   };

@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { Icon } from "@compasser/design-system";
+import type { QRCheckResponseDTO } from "@compasser/api";
 import QRStampModal from "./QRStampModal";
+import QRRewardConfirmModal from "./QRRewardConfirmModal";
+import { useWritingRewardMutation } from "@/shared/queries/mutation/store-manager/useQrMutation";
 
 interface CafeIntroProps {
   cafeName: string;
@@ -29,13 +32,18 @@ const formatCafeName = (name: string) => {
 
   return {
     firstLine: name.slice(0, 10).trim(),
-      secondLine: name.slice(10).trim(),
+    secondLine: name.slice(10).trim(),
   };
 };
 
 export default function CafeIntro({ cafeName }: CafeIntroProps) {
   const { firstLine, secondLine } = formatCafeName(cafeName);
+
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [rewardInfo, setRewardInfo] = useState<QRCheckResponseDTO | null>(null);
+
+  const writingRewardMutation = useWritingRewardMutation();
 
   const handleOpenQrModal = () => {
     setIsQrModalOpen(true);
@@ -45,8 +53,28 @@ export default function CafeIntro({ cafeName }: CafeIntroProps) {
     setIsQrModalOpen(false);
   };
 
-  const handleSubmitStamp = () => {
-    console.log("적립하기");
+  const handleQrSuccess = (data: QRCheckResponseDTO) => {
+    setRewardInfo(data);
+    setIsQrModalOpen(false);
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleCloseConfirmModal = () => {
+    setIsConfirmModalOpen(false);
+    setRewardInfo(null);
+  };
+
+  const handleConfirmReward = async () => {
+    if (!rewardInfo) return;
+
+    await writingRewardMutation.mutateAsync({
+      rewardId: rewardInfo.rewardId,
+      storeId: rewardInfo.storeId,
+      memberId: rewardInfo.memberId,
+    });
+
+    setIsConfirmModalOpen(false);
+    setRewardInfo(null);
   };
 
   return (
@@ -81,7 +109,26 @@ export default function CafeIntro({ cafeName }: CafeIntroProps) {
       <QRStampModal
         open={isQrModalOpen}
         onClose={handleCloseQrModal}
-        onSubmit={handleSubmitStamp}
+        onSuccess={handleQrSuccess}
+      />
+
+      <QRRewardConfirmModal
+        open={isConfirmModalOpen}
+        onClose={handleCloseConfirmModal}
+        onConfirm={handleConfirmReward}
+        isPending={writingRewardMutation.isPending}
+        info={
+          rewardInfo
+            ? {
+                nickname: rewardInfo.nickname,
+                email: rewardInfo.email,
+                randomBoxName: rewardInfo.randomBoxName,
+                totalPrice: rewardInfo.totalPrice,
+                stamp: rewardInfo.stamp,
+                coupon: rewardInfo.coupon,
+              }
+            : null
+        }
       />
     </>
   );

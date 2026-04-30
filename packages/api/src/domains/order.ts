@@ -6,12 +6,15 @@ import type {
   CancelOrderResponse,
   CreateOrderDTO,
   CreateOrderResponse,
+  OrderListResponse,
+  OrderListTab,
   OrderStatusResponse,
 } from "../models/order";
 
 export const createOrderModule = (api: CompasserApi) => {
   const keys = {
     all: ["orders"] as const,
+    list: (tab: OrderListTab) => [...keys.all, "list", tab] as const,
     status: (orderId: number) => [...keys.all, orderId, "status"] as const,
   };
 
@@ -20,6 +23,18 @@ export const createOrderModule = (api: CompasserApi) => {
       const { data } = await api.privateClient.post<CreateOrderResponse>(
         "/orders",
         body,
+      );
+      return data;
+    },
+
+    getOrders: async (tab: OrderListTab) => {
+      const { data } = await api.privateClient.get<OrderListResponse>(
+        "/orders",
+        {
+          params: {
+            tab,
+          },
+        },
       );
       return data;
     },
@@ -40,6 +55,15 @@ export const createOrderModule = (api: CompasserApi) => {
   };
 
   const queries = {
+    list: (tab: OrderListTab) =>
+      queryOptions({
+        queryKey: keys.list(tab),
+        queryFn: async () => {
+          const response = await requests.getOrders(tab);
+          return response.data.orders;
+        },
+      }),
+
     status: (orderId: number) =>
       queryOptions({
         queryKey: keys.status(orderId),
@@ -83,6 +107,9 @@ export const createOrderModule = (api: CompasserApi) => {
   const invalidate = {
     all: async (queryClient: QueryClient) =>
       invalidatePrefix(queryClient, keys.all),
+
+    list: async (queryClient: QueryClient, tab: OrderListTab) =>
+      invalidatePrefix(queryClient, keys.list(tab)),
 
     status: async (queryClient: QueryClient, orderId: number) =>
       invalidatePrefix(queryClient, keys.status(orderId)),

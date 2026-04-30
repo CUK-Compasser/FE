@@ -11,6 +11,7 @@ export * from "./models/owner";
 export * from "./models/payment";
 export * from "./models/random-box";
 export * from "./models/store";
+export * from "./models/storeManager";
 export * from "./models/store-image";
 export * from "./domains/auth";
 export * from "./domains/health";

@@ -39,5 +39,20 @@ export interface ReservationListDTO {
   count: number;
 }
 
+export interface SettlementPreviewReservationDTO {
+  reservationId: number;
+  memberId: number;
+  totalPrice: number;
+  createdAt: string;
+}
+
+export interface SettlementPreviewDTO {
+  storeId: number;
+  storeName: string;
+  count: number;
+  totalAmount: number;
+  reservations: SettlementPreviewReservationDTO[];
+}
+
 export type ReservationResponse = ApiResponse<ReservationDTO>;
 export type ReservationListResponse = ApiResponse<ReservationListDTO>;

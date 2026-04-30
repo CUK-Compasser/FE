@@ -3,17 +3,22 @@
 import { Icon } from "@compasser/design-system";
 import { LOGIN_TEXT } from "../_constants/login.constants";
 
-interface KakaoLoginButtonProps {
-  onClick: () => void;
-}
+export default function KakaoLoginButton() {
+  const handleKakaoLogin = () => {
+    const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-export default function KakaoLoginButton({
-  onClick,
-}: KakaoLoginButtonProps) {
+    if (!baseURL) {
+      console.log("NEXT_PUBLIC_API_BASE_URL이 없습니다.");
+      return;
+    }
+
+    window.location.href = `${baseURL}/oauth2/authorization/kakao`;
+  };
+
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={handleKakaoLogin}
       aria-label={LOGIN_TEXT.kakaoLoginButton}
       className="relative flex w-full items-center justify-center rounded-[8px] bg-[#FEE500] px-[1.2rem] py-[1rem]"
     >

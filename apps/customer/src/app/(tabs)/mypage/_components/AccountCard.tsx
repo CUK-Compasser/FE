@@ -1,37 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card } from "@compasser/design-system";
 import { ConfirmActionModal } from "./ConfirmActionModal";
+import { useLogoutMutation } from "@/shared/queries/mutation/auth/useLogoutMutation";
 
 export const AccountCard = () => {
+  const router = useRouter();
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
 
-  const handleOpenLogoutModal = () => {
-    setIsLogoutModalOpen(true);
-  };
-
-  const handleCloseLogoutModal = () => {
-    setIsLogoutModalOpen(false);
-  };
-
-  const handleOpenWithdrawModal = () => {
-    setIsWithdrawModalOpen(true);
-  };
-
-  const handleCloseWithdrawModal = () => {
-    setIsWithdrawModalOpen(false);
-  };
+  const { mutate: logout, isPending } = useLogoutMutation();
 
   const handleLogout = () => {
-    console.log("로그아웃");
-    setIsLogoutModalOpen(false);
-  };
-
-  const handleWithdraw = () => {
-    console.log("회원탈퇴");
-    setIsWithdrawModalOpen(false);
+    logout(undefined, {
+      onSuccess: () => {
+        setIsLogoutModalOpen(false);
+        router.replace("/login");
+      },
+    });
   };
 
   return (
@@ -44,7 +32,7 @@ export const AccountCard = () => {
             <div className="flex flex-col items-start gap-[1.2rem]">
               <button
                 type="button"
-                onClick={handleOpenLogoutModal}
+                onClick={() => setIsLogoutModalOpen(true)}
                 className="body2-r text-default"
               >
                 로그아웃
@@ -52,7 +40,7 @@ export const AccountCard = () => {
 
               <button
                 type="button"
-                onClick={handleOpenWithdrawModal}
+                onClick={() => setIsWithdrawModalOpen(true)}
                 className="body2-r text-default"
               >
                 회원탈퇴
@@ -66,10 +54,10 @@ export const AccountCard = () => {
         open={isLogoutModalOpen}
         title="로그아웃하시겠습니까?"
         cancelText="그만두기"
-        confirmText="로그아웃"
+        confirmText={isPending ? "로그아웃 중..." : "로그아웃"}
         cancelVariant="gray"
         confirmVariant="primary"
-        onClose={handleCloseLogoutModal}
+        onClose={() => setIsLogoutModalOpen(false)}
         onConfirm={handleLogout}
       />
 
@@ -80,8 +68,11 @@ export const AccountCard = () => {
         confirmText="탈퇴하기"
         cancelVariant="gray"
         confirmVariant="secondary"
-        onClose={handleCloseWithdrawModal}
-        onConfirm={handleWithdraw}
+        onClose={() => setIsWithdrawModalOpen(false)}
+        onConfirm={() => {
+          setIsWithdrawModalOpen(false);
+          router.replace("/login");
+        }}
         reverseButtons={true}
       />
     </>

@@ -1,9 +1,7 @@
-export type OrderTabKey = "in-progress" | "done";
+import type { OrderListItemDTO } from "@compasser/api";
 
-export interface OrderItem {
+export type OrderTabKey = "ONGOING" | "COMPLETED";
+
+export type OrderCardItem = OrderListItemDTO & {
   id: number;
-  storeName: string;
-  orderSummary: string;
-  totalPrice: string;
-  pickupTime: string;
-}
+};

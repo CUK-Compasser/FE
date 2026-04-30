@@ -1,9 +1,10 @@
 import type { ApiResponse } from "../core/types";
 
 export interface RewardListDTO {
-  rewardId: number;
-  points: number;
-  storename: string;
+  storeName: string;
+  stamp: number;
+  coupon: number;
+  useCouponCnt: number;
 }
 
 export interface MyPageRespDTO {
@@ -16,28 +17,5 @@ export interface MyPageRespDTO {
   totalCouponCount: number;
 }
 
-export interface QRDTO {
-  memberId?: number;
-  token?: string;
-}
-
-export interface GetMemberRewardDTO {
-  rewardId: number;
-  storeId: number;
-  memberId: number;
-  nickname: string;
-  stamp: number;
-  coupon: number;
-  createdAt: string;
-}
-
-export interface WritingRewardDTO {
-  rewardId?: number;
-  storeId?: number;
-  memberId?: number;
-}
-
 export type RewardListResponse = ApiResponse<RewardListDTO[]>;
 export type MyPageResponse = ApiResponse<MyPageRespDTO>;
-export type GetMemberRewardResponse = ApiResponse<GetMemberRewardDTO>;
-export type WritingRewardResponse = ApiResponse<Record<string, unknown>>;
