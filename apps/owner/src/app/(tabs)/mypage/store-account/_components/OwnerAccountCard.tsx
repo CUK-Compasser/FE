@@ -1,18 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card } from "@compasser/design-system";
 import { ConfirmActionModal } from "./ConfirmActionModal";
+import { useLogoutMutation } from "@/shared/queries/mutation/auth/useLogoutMutation";
 
 export const OwnerAccountCard = () => {
+  const router = useRouter();
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+
+  const { mutate: logout, isPending } = useLogoutMutation();
 
   const handleOpenLogoutModal = () => {
     setIsLogoutModalOpen(true);
   };
 
   const handleCloseLogoutModal = () => {
+    if (isPending) return;
     setIsLogoutModalOpen(false);
   };
 
@@ -25,13 +31,17 @@ export const OwnerAccountCard = () => {
   };
 
   const handleLogout = () => {
-    console.log("로그아웃");
-    setIsLogoutModalOpen(false);
+    logout(undefined, {
+      onSuccess: () => {
+        setIsLogoutModalOpen(false);
+        router.replace("/login");
+      },
+    });
   };
 
   const handleWithdraw = () => {
-    console.log("회원탈퇴");
     setIsWithdrawModalOpen(false);
+    router.replace("/login");
   };
 
   return (
@@ -66,7 +76,7 @@ export const OwnerAccountCard = () => {
         open={isLogoutModalOpen}
         title="로그아웃하시겠습니까?"
         cancelText="그만두기"
-        confirmText="로그아웃"
+        confirmText={isPending ? "로그아웃 중..." : "로그아웃"}
         cancelVariant="gray"
         confirmVariant="primary"
         onClose={handleCloseLogoutModal}

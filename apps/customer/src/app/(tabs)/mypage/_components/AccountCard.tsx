@@ -70,8 +70,8 @@ export const AccountCard = () => {
         confirmVariant="secondary"
         onClose={() => setIsWithdrawModalOpen(false)}
         onConfirm={() => {
-          console.log("회원탈퇴");
           setIsWithdrawModalOpen(false);
+          router.replace("/login");
         }}
         reverseButtons={true}
       />

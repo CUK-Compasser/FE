@@ -66,6 +66,7 @@ export interface SimpleStoreInfoDTO {
   storeId: number;
   tag: StoreTag;
   storeName: string;
+  storeEmail: string;
   roadAddress: string;
   jibunAddress: string;
   businessHours?: JsonValue;
