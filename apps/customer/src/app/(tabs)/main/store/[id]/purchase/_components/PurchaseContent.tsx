@@ -3,81 +3,54 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Header } from "@compasser/design-system";
-import type { JsonValue, StoreRespDTO, StoreRandomBoxRespDTO } from "@compasser/api";
+import type {
+  StoreRandomBoxRespDTO,
+  StoreRespDTO,
+} from "@compasser/api";
+import { useCreateOrderMutation } from "@/shared/queries/mutation/order/useCreateOrderMutation";
+import { useReadyKakaoPayMutation } from "@/shared/queries/mutation/payment/useReadyKakaoPayMutation";
 import PurchaseGuideModal from "./PurchaseGuideModal";
-import PurchaseInfoSection from "./PurchaseInfoSection";
 import PurchaseNoticeCard from "./PurchaseNoticeCard";
 import PurchaseOrderCard from "./PurchaseOrderCard";
-import PurchaseCompleteModal from "./PurchaseCompleteModal";
-
-type DayKey = "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
-type BusinessHoursValue = Partial<Record<DayKey, string>>;
 
 interface PurchaseContentProps {
   store: StoreRespDTO;
   menu: StoreRandomBoxRespDTO;
 }
 
-const ACCOUNT_INFO = {
-  bankName: "나무은행",
-  accountNumber: "123-4567-891011",
-  depositor: "000",
-};
+interface PickupTimeValue {
+  timezone?: string;
+  pickupTime?: {
+    start?: string;
+    end?: string;
+  };
+}
 
 const NOTICE_LIST = [
-  "결제 정보를 확인하고 이체를 진행해주세요.",
-  "10분 이내로 입금을 완료해주세요.",
+  "결제 정보를 확인하고 결제를 진행해주세요.",
+  "결제 완료 후 주문이 확정됩니다.",
   "픽업 시간에 맞춰 상품을 수령해주세요.",
 ];
 
-const DAY_KEYS: DayKey[] = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
-const DAY_LABELS: Record<DayKey, string> = {
-  mon: "월",
-  tue: "화",
-  wed: "수",
-  thu: "목",
-  fri: "금",
-  sat: "토",
-  sun: "일",
-};
-
-function parseBusinessHours(value?: JsonValue): BusinessHoursValue | undefined {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    return undefined;
+function getPickupTimeText(pickupTime?: string): string {
+  if (!pickupTime) {
+    return "픽업시간 정보 없음";
   }
 
-  const record = value as Record<string, unknown>;
-  const result: BusinessHoursValue = {};
+  try {
+    const parsed = JSON.parse(pickupTime) as PickupTimeValue;
 
-  const keys: DayKey[] = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+    const start = parsed.pickupTime?.start;
+    const end = parsed.pickupTime?.end;
 
-  for (const key of keys) {
-    const item = record[key];
-    if (typeof item === "string") {
-      result[key] = item;
+    if (!start || !end) {
+      return "픽업시간 정보 없음";
     }
+
+    return `${start} ~ ${end}`;
+  } catch {
+    return "픽업시간 정보 없음";
   }
-
-  return result;
-}
-
-function getTodayPickupTimeText(businessHours?: BusinessHoursValue): string {
-  if (!businessHours) {
-    return "운영시간 정보 없음";
-  }
-
-  const today = DAY_KEYS[new Date().getDay()];
-  const todayValue = businessHours[today];
-
-  if (!todayValue) {
-    return "운영시간 정보 없음";
-  }
-
-  if (todayValue.toLowerCase() === "closed") {
-    return `${DAY_LABELS[today]} 휴무`;
-  }
-
-  return `${DAY_LABELS[today]} ${todayValue}`;
 }
 
 export default function PurchaseContent({
@@ -87,14 +60,18 @@ export default function PurchaseContent({
   const router = useRouter();
   const [count, setCount] = useState(1);
   const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
-  const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
+
+  const createOrderMutation = useCreateOrderMutation();
+  const readyKakaoPayMutation = useReadyKakaoPayMutation();
+
+  const isPaymentPending =
+    createOrderMutation.isPending || readyKakaoPayMutation.isPending;
 
   const totalPrice = useMemo(() => menu.price * count, [menu.price, count]);
 
   const pickupTimeText = useMemo(() => {
-    const businessHours = parseBusinessHours(store.businessHours);
-    return getTodayPickupTimeText(businessHours);
-  }, [store.businessHours]);
+    return getPickupTimeText(menu.pickupTimeInfo);
+  }, [menu.pickupTimeInfo]);
 
   const handleDecrease = () => {
     setCount((prev) => Math.max(prev - 1, 0));
@@ -105,21 +82,39 @@ export default function PurchaseContent({
   };
 
   const handleOpenGuideModal = () => {
-    if (count === 0) return;
+    if (count === 0 || isPaymentPending) return;
     setIsGuideModalOpen(true);
   };
 
   const handleCloseGuideModal = () => {
+    if (isPaymentPending) return;
     setIsGuideModalOpen(false);
   };
 
-  const handleCompleteTransfer = () => {
-    setIsGuideModalOpen(false);
-    setIsCompleteModalOpen(true);
-  };
+  const handleCompleteTransfer = async () => {
+    if (count === 0 || isPaymentPending) return;
 
-  const handleCloseCompleteModal = () => {
-    setIsCompleteModalOpen(false);
+    const orderResponse = await createOrderMutation.mutateAsync({
+      randomBoxId: menu.boxId,
+      quantity: count,
+    });
+
+    const reservationId = orderResponse.data.reservationId;
+
+    sessionStorage.setItem(
+      "pendingPayment",
+      JSON.stringify({
+        reservationId,
+        store,
+        menu,
+        pickupTimeText,
+      }),
+    );
+
+    const readyResponse =
+      await readyKakaoPayMutation.mutateAsync(reservationId);
+
+    window.location.href = readyResponse.data.redirectUrl;
   };
 
   return (
@@ -143,19 +138,12 @@ export default function PurchaseContent({
               onIncrease={handleIncrease}
             />
 
-            <PurchaseInfoSection
-              bankName={ACCOUNT_INFO.bankName}
-              accountNumber={ACCOUNT_INFO.accountNumber}
-              depositor={ACCOUNT_INFO.depositor}
-              totalPrice={totalPrice}
-            />
-
             <PurchaseNoticeCard noticeList={NOTICE_LIST} />
 
             <Button
               size="lg"
               variant="primary"
-              disabled={count === 0}
+              disabled={count === 0 || isPaymentPending}
               className="mb-[4.8rem] mt-[1.6rem]"
               onClick={handleOpenGuideModal}
             >
@@ -167,17 +155,9 @@ export default function PurchaseContent({
 
       <PurchaseGuideModal
         isOpen={isGuideModalOpen}
-        accountText={`${ACCOUNT_INFO.bankName}${ACCOUNT_INFO.accountNumber}`}
+        accountText={`${totalPrice.toLocaleString()}원`}
         onClose={handleCloseGuideModal}
         onConfirm={handleCompleteTransfer}
-      />
-
-      <PurchaseCompleteModal
-        isOpen={isCompleteModalOpen}
-        store={store}
-        menu={menu}
-        pickupTimeText={pickupTimeText}
-        onClose={handleCloseCompleteModal}
       />
     </>
   );

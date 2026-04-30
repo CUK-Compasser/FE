@@ -17,15 +17,8 @@ export interface CreateOrderResultDTO {
   quantity: number;
   unitPrice: number;
   totalPrice: number;
-  orderStatus: string;
   reservationStatus: string;
   paymentStatus: string;
-  pickupStatus: string;
-  memberBankType?: BankType;
-  depositBankType?: BankType;
-  depositAccountNumber?: string;
-  depositAccountHolder?: string;
-  businessHours?: string;
   createdAt: string;
 }
 
@@ -34,7 +27,6 @@ export interface CancelOrderResultDTO {
   orderStatus: string;
   reservationStatus: string;
   paymentStatus: string;
-  pickupStatus: string;
   message: string;
 }
 
