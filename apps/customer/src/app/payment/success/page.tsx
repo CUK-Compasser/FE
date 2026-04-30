@@ -1,9 +1,10 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { StoreRandomBoxRespDTO, StoreRespDTO } from "@compasser/api";
 import { useApproveKakaoPayMutation } from "@/shared/queries/mutation/payment/useApproveKakaoPayMutation";
+import { useCompleteAdminSettlementMutation } from "@/shared/queries/mutation/admin-settlement/useCompleteAdminSettlementMutation";
 import PurchaseCompleteModal from "@/app/(tabs)/main/store/[id]/purchase/_components/PurchaseCompleteModal";
 
 interface PendingPayment {
@@ -15,7 +16,12 @@ interface PendingPayment {
 
 function PaymentSuccessContent() {
   const searchParams = useSearchParams();
+
   const approveKakaoPayMutation = useApproveKakaoPayMutation();
+  const completeAdminSettlementMutation = useCompleteAdminSettlementMutation();
+
+  const hasRequestedRef = useRef(false);
+
   const [pendingPayment, setPendingPayment] = useState<PendingPayment | null>(
     null,
   );
@@ -29,9 +35,13 @@ function PaymentSuccessContent() {
   const pgToken = searchParams.get("pg_token");
 
   useEffect(() => {
+    if (hasRequestedRef.current) return;
+
     const savedPayment = sessionStorage.getItem("pendingPayment");
 
     if (!savedPayment || !reservationId || !pgToken) return;
+
+    hasRequestedRef.current = true;
 
     const parsedPayment = JSON.parse(savedPayment) as PendingPayment;
 
@@ -44,12 +54,24 @@ function PaymentSuccessContent() {
       },
       {
         onSuccess: () => {
-          sessionStorage.removeItem("pendingPayment");
-          setIsCompleteModalOpen(true);
+          completeAdminSettlementMutation.mutate(
+            {
+              storeId: parsedPayment.store.storeId,
+              body: {
+                reservationIds: [reservationId],
+              },
+            },
+            {
+              onSettled: () => {
+                sessionStorage.removeItem("pendingPayment");
+                setIsCompleteModalOpen(true);
+              },
+            },
+          );
         },
       },
     );
-  }, [reservationId, pgToken, approveKakaoPayMutation]);
+  }, [reservationId, pgToken]);
 
   if (approveKakaoPayMutation.isPending) {
     return <div>결제 승인 처리 중...</div>;

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input, Button } from "@compasser/design-system";
-import { useVerifyBusinessMutation } from "@/shared/queries/mutation/auth/useVerifyBusinessMutation";
+import { useUpgradeToStoreManagerMutation } from "@/shared/queries/mutation/auth/useUpgradeToStoreManagerMutation";
 import { useOwnerSignupStore } from "@/shared/stores/ownerSignup.store";
 import {
   normalizeBusinessNumber,
@@ -13,7 +13,7 @@ import {
 
 export default function BusinessSignupPage() {
   const router = useRouter();
-  const verifyMutation = useVerifyBusinessMutation();
+  const upgradeMutation = useUpgradeToStoreManagerMutation();
 
   const signupCompleted = useOwnerSignupStore((s) => s.signupCompleted);
   const email = useOwnerSignupStore((s) => s.email);
@@ -65,26 +65,20 @@ export default function BusinessSignupPage() {
       return;
     }
 
-    verifyMutation.mutate(
-      {
-        businessLicenseNumber: value,
-        email,
-      },
-      {
-        onSuccess: (res) => {
-          if (res.alreadyUpgraded) {
-            setError("이미 사업자 등록이 완료된 계정입니다.");
-            return;
-          }
+    upgradeMutation.mutate(undefined, {
+      onSuccess: (res) => {
+        if (res.alreadyUpgraded) {
+          setError("이미 사업자 등록이 완료된 계정입니다.");
+          return;
+        }
 
-          setBusinessCompleted();
-          router.push("/signup/register");
-        },
-        onError: () => {
-          setError("사업자 번호 인증에 실패했습니다.");
-        },
+        setBusinessCompleted();
+        router.push("/signup/register");
       },
-    );
+      onError: () => {
+        setError("점장 승격 처리에 실패했습니다.");
+      },
+    });
   };
 
   return (
@@ -115,9 +109,9 @@ export default function BusinessSignupPage() {
           size="lg"
           variant="primary"
           onClick={handleNext}
-          disabled={verifyMutation.isPending}
+          disabled={upgradeMutation.isPending}
         >
-          {verifyMutation.isPending ? "확인 중..." : "다음으로"}
+          {upgradeMutation.isPending ? "확인 중..." : "다음으로"}
         </Button>
       </div>
     </main>

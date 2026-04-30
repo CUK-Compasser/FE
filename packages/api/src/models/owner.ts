@@ -2,8 +2,10 @@ import type { ApiResponse } from "../core/types";
 import type { ReservationStatus, RoleType } from "./common";
 
 export interface BusinessLicenseVerifyReqDTO {
-  businessLicenseNumber?: string;
-  email?: string;
+  businessLicenseNumber: string;
+  ownerName: string;
+  startDate: string;
+  businessName: string;
 }
 
 export interface OwnerUpgradeRespDTO {
@@ -37,21 +39,6 @@ export interface ReservationDTO {
 export interface ReservationListDTO {
   reservations: ReservationDTO[];
   count: number;
-}
-
-export interface SettlementPreviewReservationDTO {
-  reservationId: number;
-  memberId: number;
-  totalPrice: number;
-  createdAt: string;
-}
-
-export interface SettlementPreviewDTO {
-  storeId: number;
-  storeName: string;
-  count: number;
-  totalAmount: number;
-  reservations: SettlementPreviewReservationDTO[];
 }
 
 export type ReservationResponse = ApiResponse<ReservationDTO>;
