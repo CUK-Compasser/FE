@@ -16,11 +16,19 @@ export default function RejectOrderModal({
 }: RejectOrderModalProps) {
   const [reason, setReason] = useState("");
 
+  const trimmedReason = reason.trim();
+  const isValidReason = trimmedReason.length >= 10;
+
   useEffect(() => {
     if (!open) {
       setReason("");
     }
   }, [open]);
+
+  const handleConfirm = () => {
+    if (!isValidReason) return;
+    onConfirm(trimmedReason);
+  };
 
   return (
     <Modal
@@ -47,7 +55,8 @@ export default function RejectOrderModal({
             variant="primary"
             fullWidth={false}
             className="px-[2.2rem]"
-            onClick={() => onConfirm(reason)}
+            onClick={handleConfirm}
+            disabled={!isValidReason}
           >
             거절하기
           </Button>
@@ -58,7 +67,7 @@ export default function RejectOrderModal({
         <input
           value={reason}
           onChange={(e) => setReason(e.target.value)}
-          placeholder="거절 사유를 입력해주세요."
+          placeholder="거절 사유를 입력해주세요. (10자 이상)"
           className="
             w-full rounded-[8px] border border-primary
             px-[1rem] py-[0.6rem]
@@ -67,6 +76,12 @@ export default function RejectOrderModal({
             outline-none
           "
         />
+
+        {!isValidReason && reason.length > 0 && (
+          <p className="caption-m mt-[0.6rem] text-secondary">
+            거절 사유는 10자 이상 입력해주세요.
+          </p>
+        )}
       </div>
     </Modal>
   );
