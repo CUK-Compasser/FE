@@ -5,20 +5,51 @@ import { Header, TopTabBar } from "@compasser/design-system";
 import OrderList from "./_components/OrderList";
 import AcceptOrderModal from "./_components/modal/AcceptOrderModal";
 import RejectOrderModal from "./_components/modal/RejectOrderModal";
-import { INITIAL_RESERVATIONS } from "./_constants/mockOrders";
-import { formatProcessedAt } from "./_utils/formatProcessAt";
 import type {
   AcceptModalState,
   OrderTabKey,
   RejectModalState,
   ReservationItem,
 } from "./_types/order";
+import { usePendingReservationsQuery } from "@/shared/queries/query/owner/usePendingReservationsQuery";
+import { useProcessedReservationsQuery } from "@/shared/queries/query/owner/useProcessedReservationsQuery";
+import { useApproveReservationMutation } from "@/shared/queries/mutation/owner/useApproveReservationMutation";
+import { useRejectReservationMutation } from "@/shared/queries/mutation/owner/useRejectReservationMutation";
+import type { ReservationDTO } from "@compasser/api";
+
+const formatPrice = (price: number) => `${price.toLocaleString()}원`;
+
+const mapReservationStatus = (
+  status: ReservationDTO["status"],
+): ReservationItem["status"] => {
+  switch (status) {
+    case "REQUESTED":
+      return "pending";
+    case "APPROVED":
+      return "completed";
+    case "REJECTED":
+      return "cancelled";
+    case "CANCELED":
+      return "refunded";
+    default:
+      return "pending";
+  }
+};
+
+const mapReservationToItem = (
+  reservation: ReservationDTO,
+): ReservationItem => ({
+  id: reservation.reservationId,
+  customerName: reservation.customerName,
+  orderDetail: reservation.randomBoxName,
+  price: formatPrice(reservation.totalPrice),
+  quantity: `${reservation.requestedQuantity}개`,
+  status: mapReservationStatus(reservation.status),
+  rejectReason: reservation.rejectReason,
+});
 
 export default function OrderStatusPage() {
   const [activeTab, setActiveTab] = useState<OrderTabKey>("reservation");
-  const [orders, setOrders] = useState<ReservationItem[]>(INITIAL_RESERVATIONS);
-  const isOrderTabKey = (key: string): key is OrderTabKey =>
-   key === "reservation" || key === "order";
 
   const [acceptModal, setAcceptModal] = useState<AcceptModalState>({
     isOpen: false,
@@ -30,18 +61,44 @@ export default function OrderStatusPage() {
     orderId: null,
   });
 
+  const {
+    data: pendingReservationData,
+    isLoading: isPendingLoading,
+    isError: isPendingError,
+  } = usePendingReservationsQuery();
+
+  const {
+    data: processedReservationData,
+    isLoading: isProcessedLoading,
+    isError: isProcessedError,
+  } = useProcessedReservationsQuery();
+
+  const approveMutation = useApproveReservationMutation();
+  const rejectMutation = useRejectReservationMutation();
+
+  const isOrderTabKey = (key: string): key is OrderTabKey =>
+    key === "reservation" || key === "order";
+
   const reservationOrders = useMemo(
-    () => orders.filter((order) => order.status === "pending"),
-    [orders]
+    () =>
+      pendingReservationData?.reservations.map(mapReservationToItem) ?? [],
+    [pendingReservationData],
   );
 
-  const completedOrders = useMemo(
-    () => orders.filter((order) => order.status !== "pending"),
-    [orders]
+  const processedOrders = useMemo(
+    () =>
+      processedReservationData?.reservations.map(mapReservationToItem) ?? [],
+    [processedReservationData],
   );
 
   const currentOrders =
-    activeTab === "reservation" ? reservationOrders : completedOrders;
+    activeTab === "reservation" ? reservationOrders : processedOrders;
+
+  const isLoading =
+    activeTab === "reservation" ? isPendingLoading : isProcessedLoading;
+
+  const isError =
+    activeTab === "reservation" ? isPendingError : isProcessedError;
 
   const openAcceptModal = (orderId: number) => {
     setAcceptModal({
@@ -74,41 +131,31 @@ export default function OrderStatusPage() {
   const handleAcceptOrder = () => {
     if (acceptModal.orderId === null) return;
 
-    const now = formatProcessedAt(new Date());
-
-    setOrders((prev) =>
-      prev.map((order) =>
-        order.id === acceptModal.orderId
-          ? {
-            ...order,
-            status: "completed",
-            processedAt: now,
-          }
-          : order
-      )
+    approveMutation.mutate(
+      {
+        reservationId: acceptModal.orderId,
+      },
+      {
+        onSuccess: closeAcceptModal,
+      },
     );
-
-    closeAcceptModal();
   };
 
-  const handleRejectOrder = (_reason: string) => {
+  const handleRejectOrder = (reason: string) => {
     if (rejectModal.orderId === null) return;
 
-    const now = formatProcessedAt(new Date());
-
-    setOrders((prev) =>
-      prev.map((order) =>
-        order.id === rejectModal.orderId
-          ? {
-            ...order,
-            status: "cancelled",
-            processedAt: now,
-          }
-          : order
-      )
+    rejectMutation.mutate(
+      {
+        reservationId: rejectModal.orderId,
+        body: {
+          status: "REQUESTED",
+          rejectReason: reason,
+        },
+      },
+      {
+        onSuccess: closeRejectModal,
+      },
     );
-
-    closeRejectModal();
   };
 
   return (
@@ -128,12 +175,24 @@ export default function OrderStatusPage() {
         />
 
         <section className="flex-1 overflow-y-auto px-[1.6rem] pt-[2.8rem] pb-[10rem]">
-          <OrderList
-            activeTab={activeTab}
-            orders={currentOrders}
-            onAccept={openAcceptModal}
-            onReject={openRejectModal}
-          />
+          {isLoading ? (
+            <div className="flex h-full items-center justify-center">
+              <p className="body1-m text-gray-600">불러오는 중이에요.</p>
+            </div>
+          ) : isError ? (
+            <div className="flex h-full items-center justify-center">
+              <p className="body1-m text-gray-600">
+                주문 내역을 불러오지 못했어요.
+              </p>
+            </div>
+          ) : (
+            <OrderList
+              activeTab={activeTab}
+              orders={currentOrders}
+              onAccept={openAcceptModal}
+              onReject={openRejectModal}
+            />
+          )}
         </section>
       </main>
 
