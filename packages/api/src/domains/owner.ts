@@ -6,14 +6,14 @@ import type {
   BusinessLicenseVerifyReqDTO,
   OwnerUpgradeRespDTO,
   ReservationListResponse,
-  ReservationReqDTO,
+  ReservationRejectReqDTO,
   ReservationResponse,
   SettlementPreviewDTO,
 } from "../models/owner";
 
 export interface ReservationDecisionParams {
   reservationId: number;
-  body?: ReservationReqDTO;
+  body?: ReservationRejectReqDTO;
 }
 
 export const createOwnerModule = (api: CompasserApi) => {
