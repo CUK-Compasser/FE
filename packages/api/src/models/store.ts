@@ -4,10 +4,11 @@ import type { StoreTag } from "./common";
 export interface StoreUpdateReqDTO {
   storeName?: string;
   storeEmail?: string;
-  bankName?: string;
+  bankType?: string;
   depositor?: string;
   bankAccount?: string;
   businessHours?: JsonValue;
+  tag?: StoreTag;
 }
 
 export interface StoreLocationUpdateReqDTO {
@@ -66,9 +67,9 @@ export interface SimpleStoreInfoDTO {
   storeId: number;
   tag: StoreTag;
   storeName: string;
-  storeEmail: string;
   roadAddress: string;
   jibunAddress: string;
+  storeEmail: string;
   businessHours?: JsonValue;
 }
 
