@@ -1,3 +1,4 @@
+import { JsonValue } from "../core/types";
 import type { SaleStatus } from "./common";
 
 export interface RandomBoxCreateReqDTO {
@@ -6,6 +7,7 @@ export interface RandomBoxCreateReqDTO {
   stock?: number;
   price?: number;
   buyLimit?: number;
+  pickupTimeInfo?: JsonValue;
 }
 
 export interface RandomBoxUpdateReqDTO extends RandomBoxCreateReqDTO {
@@ -20,5 +22,6 @@ export interface RandomBoxRespDTO {
   price: number;
   buyLimit: number;
   content: string;
-  saleStatus: string;
+  saleStatus: SaleStatus | string;
+  pickupTimeInfo: string;
 }

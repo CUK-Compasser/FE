@@ -1,6 +1,10 @@
 export type OrderTabKey = "reservation" | "order";
 
-export type ReservationStatus = "pending" | "completed" | "cancelled";
+export type ReservationStatus =
+  | "pending"
+  | "completed"
+  | "cancelled"
+  | "refunded";
 
 export interface ReservationItem {
   id: number;
@@ -10,6 +14,7 @@ export interface ReservationItem {
   quantity: string;
   status: ReservationStatus;
   processedAt?: string;
+  rejectReason?: string;
 }
 
 export interface AcceptModalState {

@@ -3,39 +3,40 @@
 import { useMemo, useState } from "react";
 import { Input, Tag } from "@compasser/design-system";
 import {
-  filterBankNames,
+  filterBanks,
+  getBankLabel,
   normalizeAccountNumber,
 } from "@/shared/utils/bank";
 
 type AccountStep = "bank" | "holder" | "account";
 
 interface AccountFieldProps {
-  bankName: string;
+  bankType: string;
   depositor: string;
   bankAccount: string;
-  onChangeBankName: (value: string) => void;
+  onChangeBankType: (value: string) => void;
   onChangeDepositor: (value: string) => void;
   onChangeBankAccount: (value: string) => void;
 }
 
 export default function AccountField({
-  bankName,
+  bankType,
   depositor,
   bankAccount,
-  onChangeBankName,
+  onChangeBankType,
   onChangeDepositor,
   onChangeBankAccount,
 }: AccountFieldProps) {
   const [step, setStep] = useState<AccountStep>("bank");
-  const [bankKeyword, setBankKeyword] = useState(bankName);
+  const [bankKeyword, setBankKeyword] = useState(getBankLabel(bankType));
 
   const filteredBanks = useMemo(() => {
-    return filterBankNames(bankKeyword);
+    return filterBanks(bankKeyword);
   }, [bankKeyword]);
 
   const currentValue =
     step === "bank"
-      ? bankName
+      ? bankKeyword
       : step === "holder"
         ? depositor
         : bankAccount;
@@ -49,8 +50,8 @@ export default function AccountField({
 
   const handleChangeInput = (nextValue: string) => {
     if (step === "bank") {
-      onChangeBankName(nextValue);
       setBankKeyword(nextValue);
+      onChangeBankType("");
       return;
     }
 
@@ -62,9 +63,9 @@ export default function AccountField({
     onChangeBankAccount(normalizeAccountNumber(nextValue));
   };
 
-  const handleSelectBank = (bank: string) => {
-    onChangeBankName(bank);
-    setBankKeyword(bank);
+  const handleSelectBank = (bank: { label: string; value: string }) => {
+    setBankKeyword(bank.label);
+    onChangeBankType(bank.value);
   };
 
   return (
@@ -111,13 +112,13 @@ export default function AccountField({
         <div className="mt-[0.8rem] flex flex-wrap gap-[0.6rem]">
           {filteredBanks.map((bank) => (
             <Tag
-              key={bank}
+              key={bank.value}
               variant="rounded-rect"
-              selected={bankName === bank}
+              selected={bankType === bank.value}
               changeOnClick={false}
               onClick={() => handleSelectBank(bank)}
             >
-              {bank}
+              {bank.label}
             </Tag>
           ))}
         </div>

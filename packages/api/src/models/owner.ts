@@ -13,30 +13,27 @@ export interface OwnerUpgradeRespDTO {
   alreadyUpgraded: boolean;
 }
 
-export interface ReservationReqDTO {
+export interface ReservationRejectReqDTO {
   status?: ReservationStatus;
-  rejectReason?: string;
+  rejectReason: string;
 }
 
 export interface ReservationDTO {
   reservationId: number;
   memberId: number;
-  nickName: string;
+  customerName: string;
   storeId: number;
   storeName: string;
   randomBoxId: number;
   randomBoxName: string;
-  price: number;
+  totalPrice: number;
   status: ReservationStatus;
   requestedQuantity: number;
   rejectReason?: string;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface ReservationListDTO {
   reservations: ReservationDTO[];
-  count: number;
 }
 
 export interface SettlementPreviewReservationDTO {

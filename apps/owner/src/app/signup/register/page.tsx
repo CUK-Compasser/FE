@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import type {
   StoreUpdateReqDTO,
   StoreLocationUpdateReqDTO,
+  StoreTag,
+  BankType,
 } from "@compasser/api";
 
 import StoreNameField from "./_components/fields/StoreNameField";
@@ -19,19 +21,36 @@ import TagSection from "./_components/sections/TagSection";
 import RegisterSubmitButton from "./_components/RegisterSubmitButton";
 import BusinessHoursModal from "./_components/modals/BusinessHoursModal";
 import RandomBoxModal from "./_components/modals/RandomBoxModal";
-
+import AddressSearchBottomSheet from "./_components/AddressSearchBottomSheet";
+import type { AddressSearchItem } from "./_types/address-search";
 import { useMyStoreQuery } from "@/shared/queries/query/useMyStoreQuery";
 import { usePatchMyStoreMutation } from "@/shared/queries/mutation/auth/usePatchMyStoreMutation";
 import { usePatchMyStoreLocationMutation } from "@/shared/queries/mutation/auth/usePatchMyStoreLocationMutation";
 import { useRandomBoxListQuery } from "@/shared/queries/query/useRandomBoxListQuery";
 import { useCreateRandomBoxMutation } from "@/shared/queries/mutation/auth/useCreateRandomBoxMutation";
-import { useUpdateRandomBoxMutation } from "@/shared/queries/mutation/auth/useUpdateRandomBoxMutation";
+// import { useUpdateRandomBoxMutation } from "@/shared/queries/mutation/auth/useUpdateRandomBoxMutation";
 import { useDeleteRandomBoxMutation } from "@/shared/queries/mutation/auth/useDeleteRandomBoxMutation";
 import { useStoreImageQuery } from "@/shared/queries/query/useStoreImageQuery";
 import { useUploadStoreImageMutation } from "@/shared/queries/mutation/auth/useUploadStoreImageMutation";
 import { useRemoveStoreImageMutation } from "@/shared/queries/mutation/auth/useRemoveStoreImageMutation";
 
 import { parseBusinessHours, EMPTY_BUSINESS_HOURS } from "./_utils/business-hours";
+
+const tagOptions = ["카페", "베이커리", "식당"] as const;
+
+type TagLabel = (typeof tagOptions)[number];
+
+const tagMap: Record<TagLabel, StoreTag> = {
+  카페: "CAFE",
+  베이커리: "BAKERY",
+  식당: "RESTAURANT",
+};
+
+const reverseTagMap: Record<StoreTag, TagLabel> = {
+  CAFE: "카페",
+  BAKERY: "베이커리",
+  RESTAURANT: "식당",
+};
 
 export default function StoreRegisterPage() {
   const router = useRouter();
@@ -45,7 +64,7 @@ export default function StoreRegisterPage() {
   const patchMyStoreMutation = usePatchMyStoreMutation();
   const patchMyStoreLocationMutation = usePatchMyStoreLocationMutation();
   const createRandomBoxMutation = useCreateRandomBoxMutation();
-  const updateRandomBoxMutation = useUpdateRandomBoxMutation();
+  // const updateRandomBoxMutation = useUpdateRandomBoxMutation();
   const deleteRandomBoxMutation = useDeleteRandomBoxMutation();
   const uploadStoreImageMutation = useUploadStoreImageMutation();
   const removeStoreImageMutation = useRemoveStoreImageMutation();
@@ -53,13 +72,13 @@ export default function StoreRegisterPage() {
   const [storeName, setStoreName] = useState("");
   const [storeEmail, setStoreEmail] = useState("");
   const [inputAddress, setInputAddress] = useState("");
-  const [bankName, setBankName] = useState("");
+  const [bankType, setBankType] = useState<BankType | "">("");
+  const [isAddressSearchOpen, setIsAddressSearchOpen] = useState(false);
   const [depositor, setDepositor] = useState("");
   const [bankAccount, setBankAccount] = useState("");
   const [businessHours, setBusinessHours] = useState(EMPTY_BUSINESS_HOURS);
 
-  const tagOptions = ["카페", "베이커리", "식당"] as const;
-  const [selectedTag, setSelectedTag] = useState<"" | "카페" | "베이커리" | "식당">("");
+  const [selectedTag, setSelectedTag] = useState<"" | TagLabel>("");
   const [selectedRandomBoxIds, setSelectedRandomBoxIds] = useState<number[]>([]);
   const [isBusinessHoursModalOpen, setIsBusinessHoursModalOpen] = useState(false);
   const [isRandomBoxModalOpen, setIsRandomBoxModalOpen] = useState(false);
@@ -69,12 +88,16 @@ export default function StoreRegisterPage() {
   const [imageRemoved, setImageRemoved] = useState(false);
 
   useEffect(() => {
-    if (!myStore) return;
+  if (!myStore) return;
 
     setStoreName(myStore.storeName ?? "");
-    setStoreEmail("");
+    setStoreEmail(myStore.storeEmail ?? "");
     setInputAddress(myStore.inputAddress ?? "");
     setBusinessHours(parseBusinessHours(myStore.businessHours));
+
+    if (myStore.tag) {
+      setSelectedTag(reverseTagMap[myStore.tag as StoreTag] ?? "");
+    }
   }, [myStore]);
 
   useEffect(() => {
@@ -83,6 +106,16 @@ export default function StoreRegisterPage() {
   }, [storeImage, imageRemoved]);
 
   const businessHoursRows = useMemo(() => {
+    const dayKeyMap = {
+      mon: "MON",
+      tue: "TUE",
+      wed: "WED",
+      thu: "THU",
+      fri: "FRI",
+      sat: "SAT",
+      sun: "SUN",
+    } as const;
+
     const dayLabelMap = {
       mon: "월",
       tue: "화",
@@ -96,8 +129,11 @@ export default function StoreRegisterPage() {
     const orderedDays = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
 
     return orderedDays.map((day) => {
-      const value = businessHours[day];
-      const formatted = value === "closed" ? "휴무" : value || "-";
+      const value = businessHours.weekly[dayKeyMap[day]];
+
+      const formatted = value.closed
+        ? "휴무"
+        : `${value.open || "-"} - ${value.close || "-"}`;
 
       return {
         dayLabel: dayLabelMap[day],
@@ -106,9 +142,14 @@ export default function StoreRegisterPage() {
     });
   }, [businessHours]);
 
+  const handleSelectAddress = (item: AddressSearchItem) => {
+    setInputAddress(item.roadAddress || item.lotNumberAddress || item.label);
+    setIsAddressSearchOpen(false);
+  };
+
   const toggleRandomBoxSelection = (id: number) => {
     setSelectedRandomBoxIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
     );
   };
 
@@ -117,8 +158,8 @@ export default function StoreRegisterPage() {
 
     await Promise.all(
       selectedRandomBoxIds.map((boxId) =>
-        deleteRandomBoxMutation.mutateAsync({ storeId, boxId })
-      )
+        deleteRandomBoxMutation.mutateAsync({ storeId, boxId }),
+      ),
     );
 
     setSelectedRandomBoxIds([]);
@@ -130,34 +171,35 @@ export default function StoreRegisterPage() {
     price: number;
     buyLimit: number;
     content: string;
+    pickupTimeInfo: {
+      start: string;
+      end: string;
+    };
     boxId?: number;
   }) => {
     if (!storeId) return;
 
-    if (form.boxId) {
-      await updateRandomBoxMutation.mutateAsync({
-        storeId,
-        boxId: form.boxId,
-        body: {
-          boxName: form.boxName,
-          stock: form.stock,
-          price: form.price,
-          buyLimit: form.buyLimit,
-          content: form.content,
-        },
-      });
-      return;
-    }
+    const body = {
+      boxName: form.boxName,
+      stock: form.stock,
+      price: form.price,
+      buyLimit: form.buyLimit,
+      content: form.content,
+      pickupTimeInfo: form.pickupTimeInfo,
+    };
+
+    // if (form.boxId) {
+    //   await updateRandomBoxMutation.mutateAsync({
+    //     storeId,
+    //     boxId: form.boxId,
+    //     body,
+    //   });
+    //   return;
+    // }
 
     await createRandomBoxMutation.mutateAsync({
       storeId,
-      body: {
-        boxName: form.boxName,
-        stock: form.stock,
-        price: form.price,
-        buyLimit: form.buyLimit,
-        content: form.content,
-      },
+      body,
     });
   };
 
@@ -188,10 +230,11 @@ export default function StoreRegisterPage() {
     const storePayload: StoreUpdateReqDTO = {
       storeName,
       storeEmail,
-      bankName,
+      bankType: bankType || undefined,
       depositor,
       bankAccount,
       businessHours,
+      tag: selectedTag ? tagMap[selectedTag] : undefined,
     };
 
     const locationPayload: StoreLocationUpdateReqDTO = {
@@ -222,13 +265,14 @@ export default function StoreRegisterPage() {
             <StoreAddressField
               value={inputAddress}
               onChange={setInputAddress}
-              onSearchAddress={() => {}}
+              onSearchAddress={() => setIsAddressSearchOpen(true)}
             />
+
             <AccountField
-              bankName={bankName}
+              bankType={bankType}
               depositor={depositor}
               bankAccount={bankAccount}
-              onChangeBankName={setBankName}
+              onChangeBankType={(value) => setBankType(value as BankType)}
               onChangeDepositor={setDepositor}
               onChangeBankAccount={setBankAccount}
             />
@@ -274,6 +318,12 @@ export default function StoreRegisterPage() {
         open={isRandomBoxModalOpen}
         onClose={() => setIsRandomBoxModalOpen(false)}
         onSubmit={handleSubmitRandomBox}
+      />
+
+      <AddressSearchBottomSheet
+        open={isAddressSearchOpen}
+        onClose={() => setIsAddressSearchOpen(false)}
+        onSelectAddress={handleSelectAddress}
       />
     </>
   );

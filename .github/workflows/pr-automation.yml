@@ -37,7 +37,6 @@ jobs:
               question: 'question'
             };
 
-            const branchName = context.payload.pull_request.head.ref;
             const parts = branchName.split('/');
 
             if (parts.length < 3) {

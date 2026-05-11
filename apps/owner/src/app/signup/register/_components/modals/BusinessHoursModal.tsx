@@ -6,8 +6,10 @@ import TimeRangeField from "./TimeRangeField";
 import {
   EMPTY_BUSINESS_HOURS,
   parseBusinessHours,
+  type BusinessDayValue,
   type BusinessHoursValue,
   type DayKey,
+  type ServerDayKey,
 } from "../../_utils/business-hours";
 
 type BreakTimeOption = "yes" | "no" | null;
@@ -15,6 +17,7 @@ type BreakTimeOption = "yes" | "no" | null;
 interface BusinessHourFormValue {
   openTime: string;
   closeTime: string;
+  closed: boolean;
   hasBreakTime: BreakTimeOption;
   breakStartTime: string;
   breakEndTime: string;
@@ -27,19 +30,24 @@ interface BusinessHoursModalProps {
   onSubmit?: (data: BusinessHoursValue) => void;
 }
 
-const dayOptions: { key: DayKey; label: string }[] = [
-  { key: "mon", label: "월" },
-  { key: "tue", label: "화" },
-  { key: "wed", label: "수" },
-  { key: "thu", label: "목" },
-  { key: "fri", label: "금" },
-  { key: "sat", label: "토" },
-  { key: "sun", label: "일" },
+const dayOptions: {
+  key: DayKey;
+  serverKey: ServerDayKey;
+  label: string;
+}[] = [
+  { key: "mon", serverKey: "MON", label: "월" },
+  { key: "tue", serverKey: "TUE", label: "화" },
+  { key: "wed", serverKey: "WED", label: "수" },
+  { key: "thu", serverKey: "THU", label: "목" },
+  { key: "fri", serverKey: "FRI", label: "금" },
+  { key: "sat", serverKey: "SAT", label: "토" },
+  { key: "sun", serverKey: "SUN", label: "일" },
 ];
 
 const initialBusinessHourFormValue: BusinessHourFormValue = {
   openTime: "",
   closeTime: "",
+  closed: false,
   hasBreakTime: null,
   breakStartTime: "",
   breakEndTime: "",
@@ -52,8 +60,15 @@ const getEmptyBusinessHoursForm = (): Record<DayKey, BusinessHourFormValue> => (
   thu: { ...initialBusinessHourFormValue },
   fri: { ...initialBusinessHourFormValue },
   sat: { ...initialBusinessHourFormValue },
-  sun: { ...initialBusinessHourFormValue },
+  sun: {
+    ...initialBusinessHourFormValue,
+    closed: true,
+  },
 });
+
+const getDayOption = (day: DayKey) => {
+  return dayOptions.find((option) => option.key === day);
+};
 
 const toFormValue = (
   source?: BusinessHoursValue,
@@ -61,26 +76,46 @@ const toFormValue = (
   const normalized = parseBusinessHours(source);
   const base = getEmptyBusinessHoursForm();
 
-  (Object.keys(base) as DayKey[]).forEach((day) => {
-    const value = normalized[day];
+  dayOptions.forEach(({ key, serverKey }) => {
+    const value = normalized.weekly[serverKey];
 
-    if (!value || value === "closed") {
-      return;
-    }
-
-    const [open, close] = value.split("-");
-
-    base[day] = {
-      ...base[day],
-      openTime: open ?? "",
-      closeTime: close ?? "",
-      hasBreakTime: "no",
-      breakStartTime: "",
-      breakEndTime: "",
+    base[key] = {
+      openTime: value.open ?? "",
+      closeTime: value.close ?? "",
+      closed: value.closed,
+      hasBreakTime: value["break-time"] ? "yes" : "no",
+      breakStartTime: value["break-time"]?.start ?? "",
+      breakEndTime: value["break-time"]?.end ?? "",
     };
   });
 
   return base;
+};
+
+const toBusinessDayValue = (
+  value: BusinessHourFormValue,
+): BusinessDayValue => {
+  if (value.closed) {
+    return {
+      open: null,
+      close: null,
+      "break-time": null,
+      closed: true,
+    };
+  }
+
+  return {
+    open: value.openTime,
+    close: value.closeTime,
+    "break-time":
+      value.hasBreakTime === "yes"
+        ? {
+            start: value.breakStartTime,
+            end: value.breakEndTime,
+          }
+        : null,
+    closed: false,
+  };
 };
 
 export default function BusinessHoursModal({
@@ -105,13 +140,32 @@ export default function BusinessHoursModal({
 
   const updateSelectedDayField = (
     key: keyof BusinessHourFormValue,
-    value: string | BreakTimeOption,
+    value: string | boolean | BreakTimeOption,
   ) => {
     setBusinessHoursForm((prev) => ({
       ...prev,
       [selectedDay]: {
         ...prev[selectedDay],
         [key]: value,
+      },
+    }));
+  };
+
+  const handleChangeClosed = (closed: boolean) => {
+    setBusinessHoursForm((prev) => ({
+      ...prev,
+      [selectedDay]: {
+        ...prev[selectedDay],
+        closed,
+        ...(closed
+          ? {
+              openTime: "",
+              closeTime: "",
+              hasBreakTime: "no" as BreakTimeOption,
+              breakStartTime: "",
+              breakEndTime: "",
+            }
+          : {}),
       },
     }));
   };
@@ -137,6 +191,8 @@ export default function BusinessHoursModal({
   };
 
   const isDayCompleted = (value: BusinessHourFormValue) => {
+    if (value.closed) return true;
+
     const hasOpenClose =
       value.openTime.trim() !== "" && value.closeTime.trim() !== "";
 
@@ -157,26 +213,26 @@ export default function BusinessHoursModal({
   }, [businessHoursForm]);
 
   const isRegisterButtonEnabled = useMemo(() => {
-    return dayOptions.some((day) => completedDays[day.key]);
+    return dayOptions.every((day) => completedDays[day.key]);
   }, [completedDays]);
 
   const handleSubmit = () => {
     if (!isRegisterButtonEnabled) return;
 
-    const formatted = (Object.keys(businessHoursForm) as DayKey[]).reduce<BusinessHoursValue>(
-      (acc, day) => {
-        const value = businessHoursForm[day];
-
-        if (!isDayCompleted(value)) {
-          acc[day] = "";
-          return acc;
-        }
-
-        acc[day] = `${value.openTime}-${value.closeTime}`;
-        return acc;
+    const formatted: BusinessHoursValue = {
+      weekly: {
+        ...EMPTY_BUSINESS_HOURS.weekly,
       },
-      { ...EMPTY_BUSINESS_HOURS },
-    );
+    };
+
+    (Object.keys(businessHoursForm) as DayKey[]).forEach((day) => {
+      const dayOption = getDayOption(day);
+      if (!dayOption) return;
+
+      formatted.weekly[dayOption.serverKey] = toBusinessDayValue(
+        businessHoursForm[day],
+      );
+    });
 
     onSubmit?.(formatted);
     onClose();
@@ -195,6 +251,7 @@ export default function BusinessHoursModal({
         <div className="flex flex-wrap gap-x-[0.95rem] gap-y-[0.8rem]">
           {dayOptions.map((day) => {
             const isSelected = selectedDay === day.key;
+            const isCompleted = completedDays[day.key];
 
             return (
               <button
@@ -205,7 +262,9 @@ export default function BusinessHoursModal({
                   "flex items-center justify-center rounded-[10px] border px-[1.2rem] py-[1rem]",
                   isSelected
                     ? "border-primary-variant bg-primary-variant"
-                    : "border-gray-300 bg-white",
+                    : isCompleted
+                      ? "border-primary bg-white"
+                      : "border-gray-300 bg-white",
                 )}
               >
                 <span
@@ -223,87 +282,137 @@ export default function BusinessHoursModal({
 
         <div className="pt-[2.8rem]">
           <div className="flex items-center">
-            <p className="body1-r shrink-0 text-gray-700">영업시간</p>
+            <p className="body1-r shrink-0 text-gray-700">휴무 여부</p>
 
-            <TimeRangeField
-              startTime={selectedDayValue.openTime}
-              endTime={selectedDayValue.closeTime}
-              onChangeStartTime={(value) =>
-                updateSelectedDayField("openTime", value)
-              }
-              onChangeEndTime={(value) =>
-                updateSelectedDayField("closeTime", value)
-              }
-              className="ml-[5.2rem]"
-            />
+            <div className="ml-[3.8rem] flex items-center gap-[0.4rem]">
+              <button
+                type="button"
+                onClick={() => handleChangeClosed(false)}
+                className={cn(
+                  "flex items-center justify-center rounded-[10px] border px-[1.2rem] py-[1rem]",
+                  !selectedDayValue.closed
+                    ? "border-primary-variant bg-primary-variant"
+                    : "border-gray-300 bg-white",
+                )}
+              >
+                <span
+                  className={cn(
+                    "body1-r",
+                    !selectedDayValue.closed ? "text-gray-100" : "text-gray-600",
+                  )}
+                >
+                  영업
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleChangeClosed(true)}
+                className={cn(
+                  "flex items-center justify-center rounded-[10px] border px-[1.2rem] py-[1rem]",
+                  selectedDayValue.closed
+                    ? "border-primary-variant bg-primary-variant"
+                    : "border-gray-300 bg-white",
+                )}
+              >
+                <span
+                  className={cn(
+                    "body1-r",
+                    selectedDayValue.closed ? "text-gray-100" : "text-gray-600",
+                  )}
+                >
+                  휴무
+                </span>
+              </button>
+            </div>
           </div>
 
-          <div className="pt-[1.6rem]">
-            <div className="flex items-center">
-              <p className="body1-r shrink-0 text-gray-700">브레이크타임</p>
+          {!selectedDayValue.closed && (
+            <>
+              <div className="flex items-center pt-[1.6rem]">
+                <p className="body1-r shrink-0 text-gray-700">영업시간</p>
 
-              <div className="ml-[2.5rem] flex items-center gap-[0.4rem]">
-                <button
-                  type="button"
-                  onClick={() => handleChangeBreakTimeOption("yes")}
-                  className={cn(
-                    "flex items-center justify-center rounded-[10px] border px-[1.2rem] py-[1rem]",
-                    selectedDayValue.hasBreakTime === "yes"
-                      ? "border-primary-variant bg-primary-variant"
-                      : "border-gray-300 bg-white",
-                  )}
-                >
-                  <span
-                    className={cn(
-                      "body1-r",
-                      selectedDayValue.hasBreakTime === "yes"
-                        ? "text-gray-100"
-                        : "text-gray-600",
-                    )}
-                  >
-                    유
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleChangeBreakTimeOption("no")}
-                  className={cn(
-                    "flex items-center justify-center rounded-[10px] border px-[1.2rem] py-[1rem]",
-                    selectedDayValue.hasBreakTime === "no"
-                      ? "border-primary-variant bg-primary-variant"
-                      : "border-gray-300 bg-white",
-                  )}
-                >
-                  <span
-                    className={cn(
-                      "body1-r",
-                      selectedDayValue.hasBreakTime === "no"
-                        ? "text-gray-100"
-                        : "text-gray-600",
-                    )}
-                  >
-                    무
-                  </span>
-                </button>
-              </div>
-            </div>
-
-            {selectedDayValue.hasBreakTime === "yes" && (
-              <div className="pl-[10.6rem] pt-[0.8rem]">
                 <TimeRangeField
-                  startTime={selectedDayValue.breakStartTime}
-                  endTime={selectedDayValue.breakEndTime}
+                  startTime={selectedDayValue.openTime}
+                  endTime={selectedDayValue.closeTime}
                   onChangeStartTime={(value) =>
-                    updateSelectedDayField("breakStartTime", value)
+                    updateSelectedDayField("openTime", value)
                   }
                   onChangeEndTime={(value) =>
-                    updateSelectedDayField("breakEndTime", value)
+                    updateSelectedDayField("closeTime", value)
                   }
+                  className="ml-[5.2rem]"
                 />
               </div>
-            )}
-          </div>
+
+              <div className="pt-[1.6rem]">
+                <div className="flex items-center">
+                  <p className="body1-r shrink-0 text-gray-700">브레이크타임</p>
+
+                  <div className="ml-[2.5rem] flex items-center gap-[0.4rem]">
+                    <button
+                      type="button"
+                      onClick={() => handleChangeBreakTimeOption("yes")}
+                      className={cn(
+                        "flex items-center justify-center rounded-[10px] border px-[1.2rem] py-[1rem]",
+                        selectedDayValue.hasBreakTime === "yes"
+                          ? "border-primary-variant bg-primary-variant"
+                          : "border-gray-300 bg-white",
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "body1-r",
+                          selectedDayValue.hasBreakTime === "yes"
+                            ? "text-gray-100"
+                            : "text-gray-600",
+                        )}
+                      >
+                        유
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleChangeBreakTimeOption("no")}
+                      className={cn(
+                        "flex items-center justify-center rounded-[10px] border px-[1.2rem] py-[1rem]",
+                        selectedDayValue.hasBreakTime === "no"
+                          ? "border-primary-variant bg-primary-variant"
+                          : "border-gray-300 bg-white",
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "body1-r",
+                          selectedDayValue.hasBreakTime === "no"
+                            ? "text-gray-100"
+                            : "text-gray-600",
+                        )}
+                      >
+                        무
+                      </span>
+                    </button>
+                  </div>
+                </div>
+
+                {selectedDayValue.hasBreakTime === "yes" && (
+                  <div className="pl-[10.6rem] pt-[0.8rem]">
+                    <TimeRangeField
+                      startTime={selectedDayValue.breakStartTime}
+                      endTime={selectedDayValue.breakEndTime}
+                      onChangeStartTime={(value) =>
+                        updateSelectedDayField("breakStartTime", value)
+                      }
+                      onChangeEndTime={(value) =>
+                        updateSelectedDayField("breakEndTime", value)
+                      }
+                    />
+                  </div>
+                )}
+              </div>
+            </>
+          )}
 
           <div className="pt-[1.6rem]">
             <Button

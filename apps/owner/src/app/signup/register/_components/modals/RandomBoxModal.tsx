@@ -3,12 +3,18 @@
 import { useEffect, useState } from "react";
 import { Button, Input, Modal, cn } from "@compasser/design-system";
 
+interface PickupTimeInfo {
+  start: string;
+  end: string;
+}
+
 interface RandomBoxFormValue {
   boxName: string;
   stock: number;
   price: number;
   buyLimit: number;
   content: string;
+  pickupTimeInfo: PickupTimeInfo;
   boxId?: number;
 }
 
@@ -25,6 +31,10 @@ const initialFormValue: RandomBoxFormValue = {
   price: 0,
   buyLimit: 0,
   content: "",
+  pickupTimeInfo: {
+    start: "",
+    end: "",
+  },
 };
 
 export default function RandomBoxModal({
@@ -59,11 +69,23 @@ export default function RandomBoxModal({
     }));
   };
 
+  const updatePickupTime = (key: keyof PickupTimeInfo, value: string) => {
+    setForm((prev) => ({
+      ...prev,
+      pickupTimeInfo: {
+        ...prev.pickupTimeInfo,
+        [key]: value,
+      },
+    }));
+  };
+
   const handleSubmit = async () => {
     if (!form.boxName.trim()) return;
     if (form.stock <= 0) return;
     if (form.price < 0) return;
     if (form.buyLimit <= 0) return;
+    if (!form.pickupTimeInfo.start) return;
+    if (!form.pickupTimeInfo.end) return;
 
     await onSubmit?.(form);
     onClose();
@@ -130,6 +152,32 @@ export default function RandomBoxModal({
             onChange={(event) =>
               updateField("buyLimit", Number(event.target.value || 0))
             }
+            className="w-[17rem]"
+            containerClassName="border-gray-300"
+            inputClassName="text-gray-600"
+          />
+        </div>
+
+        <div className="flex w-full items-center justify-between gap-[1.6rem]">
+          <p className="body1-r shrink-0 text-gray-700">픽업 시작 시간</p>
+
+          <Input
+            type="time"
+            value={form.pickupTimeInfo.start}
+            onChange={(event) => updatePickupTime("start", event.target.value)}
+            className="w-[17rem]"
+            containerClassName="border-gray-300"
+            inputClassName="text-gray-600"
+          />
+        </div>
+
+        <div className="flex w-full items-center justify-between gap-[1.6rem]">
+          <p className="body1-r shrink-0 text-gray-700">픽업 종료 시간</p>
+
+          <Input
+            type="time"
+            value={form.pickupTimeInfo.end}
+            onChange={(event) => updatePickupTime("end", event.target.value)}
             className="w-[17rem]"
             containerClassName="border-gray-300"
             inputClassName="text-gray-600"

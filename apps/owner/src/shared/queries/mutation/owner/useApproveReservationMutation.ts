@@ -1,12 +1,8 @@
-"use client";
-
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ownerModule } from "@/shared/api/api";
 
-export const useVerifyBusinessMutation = () => {
+export const useApproveReservationMutation = () => {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    ...ownerModule.mutations.verifyBizAndUpgrade(queryClient),
-  });
+  return useMutation(ownerModule.mutations.approveReservation(queryClient));
 };

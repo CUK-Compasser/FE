@@ -9,6 +9,7 @@ import {
   createMemberModule,
   createOrderModule,
   createPaymentModule,
+  createAdminSettlementModule,
 } from "@compasser/api";
 
 const tokenStore: TokenStore = {
@@ -45,3 +46,4 @@ export const memberModule = createMemberModule(compasserApi);
 export const storeModule = createStoreModule(compasserApi);
 export const orderModule = createOrderModule(compasserApi);
 export const paymentModule = createPaymentModule(compasserApi);
+export const adminSettlementModule = createAdminSettlementModule(compasserApi);
