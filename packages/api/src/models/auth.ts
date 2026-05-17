@@ -9,6 +9,7 @@ export interface JoinReqDTO {
 }
 
 export interface JoinRespDTO {
+  accessToken: string;
   memberName: string;
   email: string;
 }

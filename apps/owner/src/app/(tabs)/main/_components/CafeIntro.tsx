@@ -8,15 +8,19 @@ import QRRewardConfirmModal from "./QRRewardConfirmModal";
 import { useWritingRewardMutation } from "@/shared/queries/mutation/store-manager/useQrMutation";
 
 interface CafeIntroProps {
-  cafeName: string;
+  cafeName?: string | null;
 }
 
-const formatCafeName = (name: string) => {
-  if (name.length <= 10) {
-    return { firstLine: name, secondLine: "" };
+const DEFAULT_CAFE_NAME = "등록된 가게";
+
+const formatCafeName = (name?: string | null) => {
+  const safeName = name?.trim() || DEFAULT_CAFE_NAME;
+
+  if (safeName.length <= 10) {
+    return { firstLine: safeName, secondLine: "" };
   }
 
-  const firstTen = name.slice(0, 10);
+  const firstTen = safeName.slice(0, 10);
   const spaceIndexes = [...firstTen]
     .map((char, index) => (char === " " ? index : -1))
     .filter((index) => index !== -1);
@@ -25,14 +29,14 @@ const formatCafeName = (name: string) => {
     const breakIndex = spaceIndexes[1];
 
     return {
-      firstLine: name.slice(0, breakIndex).trim(),
-      secondLine: name.slice(breakIndex + 1).trim(),
+      firstLine: safeName.slice(0, breakIndex).trim(),
+      secondLine: safeName.slice(breakIndex + 1).trim(),
     };
   }
 
   return {
-    firstLine: name.slice(0, 10).trim(),
-    secondLine: name.slice(10).trim(),
+    firstLine: safeName.slice(0, 10).trim(),
+    secondLine: safeName.slice(10).trim(),
   };
 };
 

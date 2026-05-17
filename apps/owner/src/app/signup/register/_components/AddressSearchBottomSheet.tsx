@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { BottomSheet, Input } from "@compasser/design-system";
+import { BottomSheet, Button } from "@compasser/design-system";
 import type { AddressSearchItem } from "../_types/address-search";
-import { searchAddressByKakao } from "../_apis/searchAddressBykakao";
+import { openDaumPostcode } from "../_apis/openDaumPostcode";
 
 interface AddressSearchBottomSheetProps {
   open: boolean;
@@ -16,59 +16,36 @@ export default function AddressSearchBottomSheet({
   onClose,
   onSelectAddress,
 }: AddressSearchBottomSheetProps) {
-  const [keyword, setKeyword] = useState("");
-  const [results, setResults] = useState<AddressSearchItem[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
+  const [isOpening, setIsOpening] = useState(false);
+  const hasOpenedRef = useRef(false);
 
-  const debounceRef = useRef<number | null>(null);
+  const handleOpenPostcode = async () => {
+    try {
+      setIsOpening(true);
+
+      const selectedAddress = await openDaumPostcode();
+
+      onSelectAddress(selectedAddress);
+      onClose();
+    } catch (error) {
+      console.error("주소 검색 실패", error);
+    } finally {
+      setIsOpening(false);
+    }
+  };
 
   useEffect(() => {
     if (!open) {
-      setKeyword("");
-      setResults([]);
-      setIsSearching(false);
-    }
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const trimmedKeyword = keyword.trim();
-
-    if (!trimmedKeyword) {
-      setResults([]);
-      setIsSearching(false);
+      hasOpenedRef.current = false;
+      setIsOpening(false);
       return;
     }
 
-    if (debounceRef.current) {
-      window.clearTimeout(debounceRef.current);
-    }
+    if (hasOpenedRef.current) return;
 
-    debounceRef.current = window.setTimeout(async () => {
-      try {
-        setIsSearching(true);
-        const searched = await searchAddressByKakao(trimmedKeyword, 10);
-        setResults(searched);
-      } catch (error) {
-        console.error(error);
-        setResults([]);
-      } finally {
-        setIsSearching(false);
-      }
-    }, 250);
-
-    return () => {
-      if (debounceRef.current) {
-        window.clearTimeout(debounceRef.current);
-      }
-    };
-  }, [keyword, open]);
-
-  const handleSelectItem = (item: AddressSearchItem) => {
-    onSelectAddress(item);
-    onClose();
-  };
+    hasOpenedRef.current = true;
+    void handleOpenPostcode();
+  }, [open]);
 
   return (
     <BottomSheet
@@ -81,47 +58,24 @@ export default function AddressSearchBottomSheet({
       className="w-full"
       contentClassName="px-[1.6rem] pt-[0.8rem] pb-[2rem]"
     >
-      <Input
-        inputStyle="address"
-        value={keyword}
-        onChange={(event) => setKeyword(event.target.value)}
-        placeholder="주소를 입력해주세요"
-      />
+      <div className="pt-[0.8rem]">
+        <p className="body2-m text-default">주소를 검색해주세요</p>
 
-      {results.length > 0 && (
-        <div className="mt-[1.2rem] max-h-[32rem] overflow-y-auto">
-          {results.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => handleSelectItem(item)}
-              className="block w-full border-b border-gray-100 px-[0.6rem] pt-[0.8rem] pb-[1rem] text-left"
-            >
-              <p className="body2-r text-default">
-                {item.roadAddress || item.lotNumberAddress}
-              </p>
-
-              {item.roadAddress && item.lotNumberAddress && (
-                <p className="caption1-r pt-[0.2rem] text-gray-500">
-                  {item.lotNumberAddress}
-                </p>
-              )}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {keyword.trim() && isSearching && (
-        <p className="caption1-r mt-[1.2rem] px-[0.6rem] text-center text-gray-500">
-          검색 중...
+        <p className="caption1-r mt-[0.6rem] text-gray-500">
+          주소 검색 창에서 주소를 선택하면 상점 주소에 자동으로 입력됩니다.
         </p>
-      )}
 
-      {keyword.trim() && !isSearching && results.length === 0 && (
-        <p className="caption1-r mt-[1.2rem] px-[0.6rem] text-center text-gray-500">
-          검색 결과가 없습니다.
-        </p>
-      )}
+        <Button
+          type="button"
+          size="lg"
+          variant="primary"
+          className="mt-[1.6rem]"
+          onClick={handleOpenPostcode}
+          disabled={isOpening}
+        >
+          {isOpening ? "주소 검색 여는 중..." : "주소 검색 다시 열기"}
+        </Button>
+      </div>
     </BottomSheet>
   );
 }

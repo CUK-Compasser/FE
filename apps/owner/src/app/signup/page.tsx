@@ -59,10 +59,15 @@ export default function SignupPage() {
         passwordConfirm,
       },
       {
-        onSuccess: () => {
+        onSuccess: (res) => {
+          const accessToken = res.data.accessToken;
+
+          localStorage.setItem("ownerAccessToken", accessToken);
+
           setSignupCompleted(email);
           router.push("/signup/business");
         },
+        
         onError: (error) => {
           console.log("회원가입 실패", error);
         },
