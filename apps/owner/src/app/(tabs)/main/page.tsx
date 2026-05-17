@@ -14,7 +14,7 @@ export default function OwnerMainPage() {
       id: reservation.reservationId,
       customerName: `회원 ${reservation.memberId}`,
       randomBoxName: `예약 #${reservation.reservationId}`,
-      price: reservation.totalPrice,
+      price: reservation.totalPrice ?? 0,
     })) ?? [];
 
   if (isLoading) {
@@ -42,8 +42,8 @@ export default function OwnerMainPage() {
       <TodayOrders orders={orders} />
 
       <TodayRewards
-        couponUsedCount={settlementPreview.count}
-        stampSavedCount={settlementPreview.totalAmount}
+        couponUsedCount={settlementPreview.count ?? 0}
+        stampSavedCount={settlementPreview.totalAmount ?? 0}
       />
     </main>
   );
