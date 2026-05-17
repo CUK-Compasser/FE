@@ -43,7 +43,7 @@ jobs:
               question: 'question'
             };
 
-            const parts = branchName.split('/');
+            const parts = headBranch.split('/');
 
             if (parts.length < 3) {
               core.setFailed("❌ 브랜치 형식은 type/#이슈번호/설명 형태여야 합니다.");
