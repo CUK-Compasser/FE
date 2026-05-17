@@ -1,8 +1,31 @@
 export interface AddressSearchItem {
   id: string;
   label: string;
-  lotNumberAddress: string;
   roadAddress: string;
-  longitude: number;
-  latitude: number;
+  lotNumberAddress: string;
+  zonecode: string;
 }
+
+export interface DaumPostcodeData {
+  zonecode: string;
+  roadAddress: string;
+  jibunAddress: string;
+  address: string;
+  buildingName: string;
+  bname: string;
+}
+
+declare global {
+  interface Window {
+    daum?: {
+      Postcode: new (options: {
+        oncomplete: (data: DaumPostcodeData) => void;
+        onclose?: () => void;
+      }) => {
+        open: () => void;
+      };
+    };
+  }
+}
+
+export {};
