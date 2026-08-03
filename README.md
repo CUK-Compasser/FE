@@ -10,7 +10,6 @@
 <br />
 
 [![Customer Service](https://img.shields.io/badge/Customer_Service-Live_Demo-5B45FF?style=for-the-badge\&logo=vercel\&logoColor=white)](https://compasser-customer.vercel.app)
-[![Repository](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge\&logo=github)](https://github.com/CUK-Compasser/FE)
 
 <br />
 
